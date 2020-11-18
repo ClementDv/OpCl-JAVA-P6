@@ -1,10 +1,12 @@
-package com.example.paymybuddy.paymybuddy.model.entity;
+package com.example.paymybuddy.paymybuddy.models.entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.Objects;
+import javax.validation.constraints.Email;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,9 +14,11 @@ public class User {
     private int id;
 
     @Column(name = "email", nullable = false)
+    @Email
     private String email;
 
     @Column(name = "password", nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(name = "money", nullable = false)
@@ -23,17 +27,15 @@ public class User {
     public User() {
     }
 
-    public User(int id, String email, String password, double money) {
-        this.id = id;
+    public User(String email, String password, double money) {
         this.email = email;
         this.password = password;
         this.money = money;
     }
 
-    public User(String email, String password, double money) {
+    public User(String email, String password) {
         this.email = email;
         this.password = password;
-        this.money = money;
     }
 
     public int getId() {
@@ -66,22 +68,6 @@ public class User {
 
     public void setMoney(double money) {
         this.money = money;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id == user.id &&
-                Double.compare(user.money, money) == 0 &&
-                Objects.equals(email, user.email) &&
-                Objects.equals(password, user.password);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, email, password, money);
     }
 }
 

@@ -1,6 +1,6 @@
 package com.example.paymybuddy.paymybuddy.service.impl;
 
-import com.example.paymybuddy.paymybuddy.model.entity.User;
+import com.example.paymybuddy.paymybuddy.models.entity.User;
 import com.example.paymybuddy.paymybuddy.repository.UserRepository;
 import com.example.paymybuddy.paymybuddy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

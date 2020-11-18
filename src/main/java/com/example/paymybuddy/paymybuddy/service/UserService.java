@@ -1,6 +1,6 @@
 package com.example.paymybuddy.paymybuddy.service;
 
-import com.example.paymybuddy.paymybuddy.model.entity.User;
+import com.example.paymybuddy.paymybuddy.models.entity.User;
 
 public interface UserService {
     User saveUser(User user);

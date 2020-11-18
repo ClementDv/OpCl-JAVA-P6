@@ -22,14 +22,14 @@
         </createTable>
     </changeSet>
     <changeSet author="Clement" id="2">
-        <createTable tableName="user">
+        <createTable tableName="users">
             <column autoIncrement="true" name="id" type="INT">
                 <constraints nullable="false" primaryKey="true" unique="true"/>
             </column>
             <column name="email" type="VARCHAR(32)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="password" type="VARCHAR(16)">
+            <column name="password" type="VARCHAR(120)">
                 <constraints nullable="false"/>
             </column>
             <column name="money" type="DOUBLE(12, 2)">
@@ -43,6 +43,6 @@
         </createIndex>
     </changeSet>
     <changeSet author="Clement" id="4">
-        <addForeignKeyConstraint baseColumnNames="fk_contact_id" baseTableName="contact" constraintName="fk_contact_id" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="user" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="fk_contact_id" baseTableName="contact" constraintName="fk_contact_id" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="users" validate="true"/>
     </changeSet>
 </databaseChangeLog>

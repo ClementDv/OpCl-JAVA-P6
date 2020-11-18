@@ -1,12 +1,19 @@
 package com.example.paymybuddy.paymybuddy.dto;
 
-public class UserDto {
+import com.example.paymybuddy.paymybuddy.models.entity.User;
+
+import javax.validation.constraints.Email;
+
+public class UserDTO {
     private int id;
+    @Email
     private String email;
     private double money;
 
-    public UserDto(int id, String email, double money) {
-        this.id = id;
+    public UserDTO() {
+    }
+
+    public UserDTO(int id, String email, double money) {
         this.email = email;
         this.money = money;
     }
@@ -33,5 +40,11 @@ public class UserDto {
 
     public void setMoney(double money) {
         this.money = money;
+    }
+
+    public void build(User user) {
+        UserDTO userDto = new UserDTO();
+        userDto.setId(user.getId());
+        userDto.setEmail(user.getEmail());
     }
 }
