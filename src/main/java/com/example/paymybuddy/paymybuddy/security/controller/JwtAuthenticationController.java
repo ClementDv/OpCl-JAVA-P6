@@ -12,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,16 +31,16 @@ public class JwtAuthenticationController {
     @Autowired
     UserRepository userRepository;
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @PostMapping(value = "/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
         authenticate(jwtRequest.getEmail(), jwtRequest.getPassword());
-
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(jwtRequest.getEmail());
+        final UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(jwtRequest.getEmail());
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
+
         return ResponseEntity.ok(new JwtResponse(token,
-                userDetails.getUsername()));
+                userDetails.getUsername(), userDetails.getId()));
     }
 
     private void authenticate(String username, String password) throws Exception {
@@ -54,7 +53,7 @@ public class JwtAuthenticationController {
         }
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @PostMapping(value = "/register")
     public ResponseEntity<?> Register(@RequestBody JwtRequest registerRequest) {
         return userDetailsService.save(registerRequest);
     }

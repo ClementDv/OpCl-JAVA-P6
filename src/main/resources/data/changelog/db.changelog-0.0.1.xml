@@ -10,14 +10,11 @@
 
     <changeSet author="Clement" id="1">
         <createTable tableName="contact">
-            <column autoIncrement="true" name="id" type="INT">
-                <constraints nullable="false" primaryKey="true" unique="true"/>
-            </column>
-            <column name="user_id" type="VARCHAR(32)">
-                <constraints nullable="false"/>
+            <column name="user_id" type="INT">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="fk_contact_id" type="INT">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
         </createTable>
     </changeSet>

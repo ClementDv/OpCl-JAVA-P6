@@ -1,13 +1,15 @@
 package com.example.paymybuddy.paymybuddy.security.model.response;
 
 public class JwtResponse {
+    private int id;
+    private String email;
     private String token;
     private String type = "Bearer";
-    private String email;
 
-    public JwtResponse(String accessToken, String email) {
+    public JwtResponse(String accessToken, String email, int id) {
         this.token = accessToken;
         this.email = email;
+        this.id = id;
     }
 
     public String getAccessToken() {
@@ -32,5 +34,13 @@ public class JwtResponse {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
