@@ -1,6 +1,6 @@
 package com.example.paymybuddy.paymybuddy.security.service;
 
-import com.example.paymybuddy.paymybuddy.models.entity.User;
+import com.example.paymybuddy.paymybuddy.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,14 +11,14 @@ import java.util.Objects;
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private Long id;
 
     private String email;
 
     @JsonIgnore
     private String password;
 
-    public UserDetailsImpl(int id, String email, String password) {
+    public UserDetailsImpl(Long id, String email, String password) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -31,7 +31,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getPassword());
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

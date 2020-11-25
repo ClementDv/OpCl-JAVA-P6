@@ -1,4 +1,4 @@
-package com.example.paymybuddy.paymybuddy.security.controller;
+package com.example.paymybuddy.paymybuddy.controller;
 
 import com.example.paymybuddy.paymybuddy.repository.UserRepository;
 import com.example.paymybuddy.paymybuddy.security.config.JwtTokenUtil;

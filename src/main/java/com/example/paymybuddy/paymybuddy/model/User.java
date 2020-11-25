@@ -1,4 +1,4 @@
-package com.example.paymybuddy.paymybuddy.models.entity;
+package com.example.paymybuddy.paymybuddy.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -11,9 +11,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private int id;
+    private Long id;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     @Email
     private String email;
 
@@ -21,16 +21,16 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @Column(name = "money", nullable = false)
-    private double money;
+    @Column(name = "balance", nullable = false)
+    private double balance;
 
     public User() {
     }
 
-    public User(String email, String password, double money) {
+    public User(String email, String password, double balance) {
         this.email = email;
         this.password = password;
-        this.money = money;
+        this.balance = balance;
     }
 
     public User(String email, String password) {
@@ -38,36 +38,40 @@ public class User {
         this.password = password;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public User setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public User setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public User setPassword(String password) {
         this.password = password;
+        return this;
     }
 
-    public double getMoney() {
-        return money;
+    public double getBalance() {
+        return balance;
     }
 
-    public void setMoney(double money) {
-        this.money = money;
+    public User setBalance(double balance) {
+        this.balance = balance;
+        return this;
     }
 }
 

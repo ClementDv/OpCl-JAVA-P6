@@ -1,13 +1,12 @@
 package com.example.paymybuddy.paymybuddy.service;
 
-import com.example.paymybuddy.paymybuddy.models.entity.User;
+import com.example.paymybuddy.paymybuddy.dto.UserDTO;
+import com.example.paymybuddy.paymybuddy.model.User;
+import org.springframework.security.core.Authentication;
 
 public interface UserService {
-    User saveUser(User user);
 
-    void deleteUser(User user);
+    UserDTO transferMoneyToBank(double amount, Authentication authentication);
 
-    User register(String email, String password);
-
-    void deleteByName(String email);
+    UserDTO transferMoneyFromBank(double amount, Authentication authentication);
 }

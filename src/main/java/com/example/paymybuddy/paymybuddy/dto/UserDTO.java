@@ -1,50 +1,52 @@
 package com.example.paymybuddy.paymybuddy.dto;
 
-import com.example.paymybuddy.paymybuddy.models.entity.User;
+import com.example.paymybuddy.paymybuddy.model.User;
 
 import javax.validation.constraints.Email;
 
 public class UserDTO {
-    private int id;
+    private Long id;
     @Email
     private String email;
-    private double money;
+    private double balance;
 
     public UserDTO() {
     }
 
-    public UserDTO(int id, String email, double money) {
-        this.email = email;
-        this.money = money;
+    public static UserDTO build(User user) {
+        return new UserDTO(user.getId(), user.getEmail(), user.getBalance());
     }
 
-    public int getId() {
+    public UserDTO(Long id, String email, double balance) {
+        this.id = id;
+        this.email = email;
+        this.balance = balance;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public UserDTO setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public UserDTO setEmail(String email) {
         this.email = email;
+        return this;
     }
 
-    public double getMoney() {
-        return money;
+    public double getBalance() {
+        return balance;
     }
 
-    public void setMoney(double money) {
-        this.money = money;
-    }
-
-    public void build(User user) {
-        UserDTO userDto = new UserDTO();
-        userDto.setId(user.getId());
-        userDto.setEmail(user.getEmail());
+    public UserDTO setBalance(double balance) {
+        this.balance = balance;
+        return this;
     }
 }
