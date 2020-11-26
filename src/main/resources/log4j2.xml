@@ -29,7 +29,7 @@
         <Logger name="org.hibernate.validator.internal.util.Version" level="warn"/>
         <logger name="org.springframework.boot.actuate.endpoint.jmx" level="warn"/>
         <logger name="org.springframework.web.servlet.PageNotFound" level="error"/>
-        <logger name="com.example.paymybuddy.paymybuddy" level="debug"/>
+        <logger name="com.paymybuddy.paymybuddy" level="debug"/>
         <Root level="info" includeLocation="false">
             <AppenderRef ref="SysOut"/>
             <AppenderRef ref="File"/>
