@@ -3,10 +3,8 @@
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
-             http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet author="Clement" id="1">
         <createTable tableName="contact">
@@ -20,6 +18,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
         </createTable>
+        <addUniqueConstraint tableName="contact" columnNames="user_id, contact_id"/>
     </changeSet>
     <changeSet author="Clement" id="2">
         <createTable tableName="users">
@@ -37,14 +36,11 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="Clement" id="3">
-        <createIndex indexName="fk_contact_id_idx" tableName="contact">
-            <column name="contact_id"/>
-            <column name="user_id"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="Clement" id="4">
-        <addForeignKeyConstraint baseColumnNames="contact_id" baseTableName="contact" constraintName="contact_id_fk" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="users" validate="true"/>
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="contact" constraintName="user_id_fk" referencedColumnNames="id" referencedTableName="users" />
+        <addForeignKeyConstraint baseColumnNames="contact_id" baseTableName="contact" constraintName="contact_id_fk"
+                                 deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="CASCADE"
+                                 referencedColumnNames="id" referencedTableName="users" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="contact" constraintName="user_id_fk"
+                                 referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
 </databaseChangeLog>

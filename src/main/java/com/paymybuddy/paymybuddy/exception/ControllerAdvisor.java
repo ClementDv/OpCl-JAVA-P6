@@ -1,6 +1,6 @@
 package com.paymybuddy.paymybuddy.exception;
 
-import com.paymybuddy.paymybuddy.model.ErrorResponse;
+import com.paymybuddy.paymybuddy.dto.ErrorResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -16,11 +16,19 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
     private final Logger logger = LogManager.getLogger(ControllerAdvisor.class);
 
+    @ExceptionHandler(ContactAlreadyAssignedException.class)
+    @ResponseBody
+    public ResponseEntity<?> handleContactAlreadyAssignedException(ContactAlreadyAssignedException e) {
+        logger.error("Contact {} already exists for user {}", e.getContactId(), e.getUserId());
+        return response(new ErrorResponse(ErrorCodesEnum.CONTACT_ALREADY_ASSIGNED.getCode(), ErrorCodesEnum.CONTACT_ALREADY_ASSIGNED.getError(), e.getMessage())
+                .withMetadata("contactId", e.getContactId()).withMetadata("userId", e.getUserId()));
+    }
+
     @ExceptionHandler(NoEnoughMoneyOnBalanceException.class)
     @ResponseBody
     public ResponseEntity<?> handleNoEnoughMoneyOnBalanceException(NoEnoughMoneyOnBalanceException e) {
         logger.error("Not enough money on balance");
-        return response(new ErrorResponse(400, "NOT_ENOUGH_MONEY", e.getMessage())
+        return response(new ErrorResponse(ErrorCodesEnum.NOT_ENOUGH_MONEY.getCode(), ErrorCodesEnum.NOT_ENOUGH_MONEY.getError(), e.getMessage())
                 .withMetadata("balance", e.getBalance()).withMetadata("transferAmount", e.getAmount()));
     }
 
@@ -28,7 +36,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> handleNonValidAmountException(NonValidAmountException e) {
         logger.error("Non valid amount");
-        return response(new ErrorResponse(400, "NON_VALID_AMOUNT", e.getMessage())
+        return response(new ErrorResponse(ErrorCodesEnum.NON_VALID_AMOUNT.getCode(), ErrorCodesEnum.NON_VALID_AMOUNT.getError(),e.getMessage())
                 .withMetadata("amount", e.getAmount()));
     }
 
@@ -36,7 +44,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> handleNoUserFoundException(NoUserFoundException e) {
         logger.error("No user found");
-        return response(new ErrorResponse(404, "NO_USER_FOUND", e.getMessage())
+        return response(new ErrorResponse(ErrorCodesEnum.NO_USER_FOUND.getCode(), ErrorCodesEnum.NO_USER_FOUND.getError(), e.getMessage())
                 .withMetadata("email", e.getEmail()));
     }
 
@@ -44,14 +52,14 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> handleNonValidEmailLogin(NonValidEmailLogin e) {
         logger.error("Email not valid");
-        return response(new ErrorResponse(400, "NON_VALID_EMAIL", e.getMessage())
+        return response(new ErrorResponse(ErrorCodesEnum.NON_VALID_EMAIL.getCode(), ErrorCodesEnum.NON_VALID_EMAIL.getError(), e.getMessage())
                 .withMetadata("email", e.getEmail()));
     }
 
 
     protected ResponseEntity<ErrorResponse> response(ErrorResponse errorResponse) {
         HttpStatus status = HttpStatus.resolve(errorResponse.getStatus());
-        logger.debug("Respoding with a stats of {}", status);
+        logger.debug("Respoding with a status of {}", status);
         return new ResponseEntity<>(errorResponse, new HttpHeaders(), status);
     }
 }

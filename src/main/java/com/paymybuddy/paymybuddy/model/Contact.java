@@ -1,9 +1,6 @@
 package com.paymybuddy.paymybuddy.model;
 
-import org.springframework.context.annotation.Primary;
-
 import javax.persistence.*;
-import javax.validation.Constraint;
 
 @Entity
 @Table(name = "contact")

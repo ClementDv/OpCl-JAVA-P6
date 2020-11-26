@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddy.service.impl;
 
+import com.paymybuddy.paymybuddy.exception.ContactAlreadyAssignedException;
 import com.paymybuddy.paymybuddy.exception.NoUserFoundException;
 import com.paymybuddy.paymybuddy.model.Contact;
 import com.paymybuddy.paymybuddy.model.User;
@@ -35,6 +36,9 @@ public class ContactServiceImpl implements ContactService {
             throw new NoUserFoundException(contactEmail);
         }
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (contactRepository.findByUserIdAndContactId(userDetails.getId(), contactId) != null) {
+            throw new ContactAlreadyAssignedException("Contact Already exists", userDetails.getId(), contactId);
+        }
         if (!contactEmail.equals(userDetails.getUsername())) {
             contactRepository.save(new Contact()
                     .setUser(new User().setId(userDetails.getId()))
