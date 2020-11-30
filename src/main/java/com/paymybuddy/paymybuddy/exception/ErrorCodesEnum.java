@@ -5,7 +5,8 @@ public enum ErrorCodesEnum {
     NOT_ENOUGH_MONEY(400, "NOT_ENOUGH_MONEY"),
     NON_VALID_AMOUNT(400, "NON_VALID_AMOUNT"),
     NO_USER_FOUND(412, "NO_USER_FOUND"),
-    NON_VALID_EMAIL(400, "NON_VALID_EMAIL");
+    NON_VALID_EMAIL(400, "NON_VALID_EMAIL"),
+    NO_BANK_FOUND(412, "NO_BANK_FOUND");
 
     private int code;
     private String error;

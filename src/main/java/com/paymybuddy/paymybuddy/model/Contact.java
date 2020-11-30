@@ -3,7 +3,7 @@ package com.paymybuddy.paymybuddy.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "contact")
+@Table(name = "contacts")
 public class Contact {
 
     @Id

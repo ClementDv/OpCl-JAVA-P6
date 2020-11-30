@@ -48,6 +48,14 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
                 .withMetadata("email", e.getEmail()));
     }
 
+    @ExceptionHandler(NoBankFoundException.class)
+    @ResponseBody
+    public ResponseEntity<?> handleNoBankFoundException(NoBankFoundException e) {
+        logger.error("No bank found");
+        return response(new ErrorResponse(ErrorCodesEnum.NO_BANK_FOUND.getCode(), ErrorCodesEnum.NO_BANK_FOUND.getError(), e.getMessage())
+                .withMetadata("bankName", e.getBankName()));
+    }
+
     @ExceptionHandler(NonValidEmailLogin.class)
     @ResponseBody
     public ResponseEntity<?> handleNonValidEmailLogin(NonValidEmailLogin e) {
@@ -55,6 +63,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return response(new ErrorResponse(ErrorCodesEnum.NON_VALID_EMAIL.getCode(), ErrorCodesEnum.NON_VALID_EMAIL.getError(), e.getMessage())
                 .withMetadata("email", e.getEmail()));
     }
+
 
 
     protected ResponseEntity<ErrorResponse> response(ErrorResponse errorResponse) {

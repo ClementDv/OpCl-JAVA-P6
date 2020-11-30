@@ -33,13 +33,16 @@ public class ContactServiceImpl implements ContactService {
     public void addContact(String contactEmail, Authentication authentication) {
         Long contactId = userRepository.findIdByEmail(contactEmail);
         if (contactId == null) {
+            logger.info("Request add contact failed");
             throw new NoUserFoundException(contactEmail);
         }
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         if (contactRepository.findByUserIdAndContactId(userDetails.getId(), contactId) != null) {
-            throw new ContactAlreadyAssignedException("Contact Already exists", userDetails.getId(), contactId);
+            logger.info("Request add contact failed");
+            throw new ContactAlreadyAssignedException(userDetails.getId(), contactId);
         }
         if (!contactEmail.equals(userDetails.getUsername())) {
+            logger.info("Request add contact successful");
             contactRepository.save(new Contact()
                     .setUser(new User().setId(userDetails.getId()))
                     .setContact(new User().setId(contactId))

@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements MoneyHolder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -28,6 +28,11 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Contact> contacts;
+
+    @Override
+    public String getCode() {
+        return "USR_" + email;
+    }
 
     public User() {
     }
@@ -94,6 +99,18 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id, email, password, balance, contacts);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                "code=" + getCode() +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", balance=" + balance +
+                ", contacts=" + contacts +
+                '}';
     }
 }
 

@@ -8,7 +8,6 @@ import com.paymybuddy.paymybuddy.security.config.JwtTokenUtil;
 import com.paymybuddy.paymybuddy.security.config.WebSecurityConfig;
 import com.paymybuddy.paymybuddy.security.model.request.JwtRequest;
 import com.paymybuddy.paymybuddy.security.model.response.JwtResponse;
-import com.paymybuddy.paymybuddy.service.impl.ContactServiceImpl;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,7 +47,7 @@ public class LoggerService implements UserDetailsService {
 
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new NoUserFoundException(email);
+            throw new UsernameNotFoundException(email);
         }
         return UserDetailsImpl.build(user);
     }
@@ -86,7 +85,7 @@ public class LoggerService implements UserDetailsService {
         return ResponseEntity.ok("User registered successfully!");
     }
 
-    private void checkValidMail(String email){
+    private void checkValidMail(String email) {
         if (!EmailValidator.getInstance().isValid(email)) {
             throw new NonValidEmailLogin(email);
         }

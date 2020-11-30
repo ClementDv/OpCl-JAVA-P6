@@ -5,6 +5,7 @@ public class ContactAlreadyAssignedException extends RuntimeException {
     private Long contactId;
 
     public ContactAlreadyAssignedException(Long userId, Long contactId) {
+        super("Contact already assigned");
         this.userId = userId;
         this.contactId = contactId;
     }
