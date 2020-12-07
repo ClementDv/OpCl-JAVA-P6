@@ -1,12 +1,16 @@
 package com.paymybuddy.paymybuddy.controller;
 
+import com.paymybuddy.paymybuddy.dto.OperationDTO;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
+import com.paymybuddy.paymybuddy.model.Operation;
 import com.paymybuddy.paymybuddy.service.ContactService;
 import com.paymybuddy.paymybuddy.service.TransferService;
 import com.paymybuddy.paymybuddy.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/paymybuddy")
@@ -44,13 +48,13 @@ public class ApiController {
         contactService.addContact(contactEmail, authentication);
     }
 
-    @GetMapping("/home")
+    @GetMapping("/informations")
     private UserDTO getPersonalInformation(Authentication authentication) {
         return userService.getPersonalInformation(authentication);
     }
 
-    @GetMapping("/Operations")
-    private String getOperations(@RequestParam(required = false) int count, Authentication authentication) {
-        return userService.getOperations(count, authentication);
+    @GetMapping("/operations")
+    private List<OperationDTO> getOperations(@RequestParam(required = false) Integer limit, Authentication authentication) {
+        return userService.getOperations(limit, authentication);
     }
 }

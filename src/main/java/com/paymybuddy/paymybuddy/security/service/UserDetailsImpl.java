@@ -1,7 +1,6 @@
 package com.paymybuddy.paymybuddy.security.service;
 
 import com.paymybuddy.paymybuddy.model.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -17,7 +16,6 @@ public class UserDetailsImpl implements UserDetails {
     @Email
     private String email;
 
-    @JsonIgnore
     private String password;
 
     public UserDetailsImpl(Long id, String email, String password) {

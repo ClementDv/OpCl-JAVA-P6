@@ -20,6 +20,7 @@
         </createTable>
         <addUniqueConstraint tableName="contacts" columnNames="user_id, contact_id"/>
     </changeSet>
+
     <changeSet author="Clement" id="2">
         <createTable tableName="users">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -36,6 +37,7 @@
             </column>
         </createTable>
     </changeSet>
+
     <changeSet id="create_bank_table" author="Clement">
         <createTable tableName="banks">
             <column name="id" type="bigint" autoIncrement="true">
@@ -45,12 +47,18 @@
             <column name="address" type="varchar(255)"/>
         </createTable>
         <addUniqueConstraint tableName="banks" columnNames="name, address"/>
-        <insert tableName="banks"><column name="name" value="LCL"/><column name="address" value="30 Boulevard de Magenta"/></insert>
-        <insert tableName="banks"><column name="name" value="BNP"/><column name="address" value="41 Avenue de l'Opéra"/></insert>
-        <insert tableName="banks"><column name="name" value="HELLOBANK"/><column name="address" value=""/></insert>
-        <insert tableName="banks"><column name="name" value="Crédit Agricole"/><column name="address" value="91 bd Pasteur"/></insert>
-        <insert tableName="banks"><column name="name" value="Groupama"/><column name="address" value="8-10, rue d'Astorg"/></insert>
+        <insert tableName="banks"><column name="name" value="LCL"/>
+            <column name="address" value="30 Boulevard de Magenta"/></insert>
+        <insert tableName="banks"><column name="name" value="BNP"/>
+            <column name="address" value="41 Avenue de l'Opéra"/></insert>
+        <insert tableName="banks"><column name="name" value="HELLOBANK"/>
+            <column name="address" value=""/></insert>
+        <insert tableName="banks"><column name="name" value="Crédit Agricole"/>
+            <column name="address" value="91 bd Pasteur"/></insert>
+        <insert tableName="banks"><column name="name" value="Groupama"/>
+            <column name="address" value="8-10, rue d'Astorg"/></insert>
     </changeSet>
+
     <changeSet id="create_operations_table" author="Clement">
         <createTable tableName="operations">
             <column name="id" type="bigint" autoIncrement="true">
@@ -62,6 +70,7 @@
             <column name="at" type="datetime" defaultValueComputed="now()"><constraints nullable="false" /></column>
         </createTable>
     </changeSet>
+
     <changeSet author="Clement" id="4">
         <addForeignKeyConstraint baseColumnNames="contact_id" baseTableName="contacts" constraintName="contact_id_fk"
                                  deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="CASCADE"

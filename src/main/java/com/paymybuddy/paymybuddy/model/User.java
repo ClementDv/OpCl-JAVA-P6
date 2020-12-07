@@ -1,7 +1,5 @@
 package com.paymybuddy.paymybuddy.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.List;
@@ -20,7 +18,6 @@ public class User implements MoneyHolder {
     private String email;
 
     @Column(name = "password", nullable = false)
-    @JsonIgnore
     private String password;
 
     @Column(name = "balance", nullable = false)

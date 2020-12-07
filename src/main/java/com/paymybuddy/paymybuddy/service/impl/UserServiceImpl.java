@@ -1,18 +1,25 @@
 package com.paymybuddy.paymybuddy.service.impl;
 
+import com.paymybuddy.paymybuddy.dto.OperationDTO;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
+import com.paymybuddy.paymybuddy.model.Operation;
 import com.paymybuddy.paymybuddy.repository.OperationRepository;
 import com.paymybuddy.paymybuddy.repository.UserRepository;
 import com.paymybuddy.paymybuddy.security.service.UserDetailsImpl;
 import com.paymybuddy.paymybuddy.service.UserService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
+
+    private static final Integer OPERATION_LIMIT_DEFAULT_VALUE = 10 ;
 
     private final OperationRepository operationRepository;
 
@@ -25,8 +32,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String getOperations(int count, Authentication authentication) {
-        return null;
+    public List<OperationDTO> getOperations(Integer limit, Authentication authentication) {
+        if (limit == null) limit = OPERATION_LIMIT_DEFAULT_VALUE;
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<Operation> operationList = operationRepository.findByEmailReceiverOrEmitterWithLimitOrderByDate("USR_" + userDetails.getUsername(), PageRequest.of(0, limit));
+        return operationList.stream().map(operation -> new OperationDTO().build(operation)).collect(Collectors.toList());
     }
 
     @Override

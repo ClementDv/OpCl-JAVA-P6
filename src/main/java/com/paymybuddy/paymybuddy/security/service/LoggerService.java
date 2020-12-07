@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.transaction.Transactional;
 
 @Service
-@Transactional
 public class LoggerService implements UserDetailsService {
 
     @Autowired
@@ -43,6 +42,7 @@ public class LoggerService implements UserDetailsService {
     private final Logger logger = LogManager.getLogger(LoggerService.class);
 
     @Override
+    @Transactional
     public UserDetailsImpl loadUserByUsername(String email) throws UsernameNotFoundException {
 
         User user = userRepository.findByEmail(email);
@@ -54,24 +54,25 @@ public class LoggerService implements UserDetailsService {
 
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
         checkValidMail(jwtRequest.getEmail());
-        authenticate(jwtRequest.getEmail(), jwtRequest.getPassword());
-        final UserDetailsImpl userDetails = loadUserByUsername(jwtRequest.getEmail());
-        final String token = jwtTokenUtil.generateToken(userDetails);
-        logger.info("Request login successful");
-        return ResponseEntity.ok(new JwtResponse(token,
-                userDetails.getUsername(), userDetails.getId()));
+        if (authenticate(jwtRequest.getEmail(), jwtRequest.getPassword())) {
+            final UserDetailsImpl userDetails = loadUserByUsername(jwtRequest.getEmail());
+            final String token = jwtTokenUtil.generateToken(userDetails);
+            logger.info("Request login successful");
+            return ResponseEntity.ok(new JwtResponse(token, userDetails.getUsername(), userDetails.getId()));
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    private void authenticate(String username, String password) throws Exception {
+    private boolean authenticate(String username, String password) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new NoUserFoundException(username);
         }
+        return true;
     }
 
+    @Transactional
     public ResponseEntity save(JwtRequest registerRequest) {
         checkValidMail(registerRequest.getEmail());
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
