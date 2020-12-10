@@ -10,4 +10,5 @@ public interface UserService {
     List<OperationDTO> getOperations(Integer limit, Authentication authentication);
 
     UserDTO getPersonalInformation(Authentication authentication);
+
 }

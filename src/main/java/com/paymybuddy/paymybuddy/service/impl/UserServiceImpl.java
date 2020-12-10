@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-    private static final Integer OPERATION_LIMIT_DEFAULT_VALUE = 10 ;
+    private static final Integer OPERATION_LIMIT_DEFAULT_VALUE = 10;
 
     private final OperationRepository operationRepository;
 
@@ -45,3 +45,4 @@ public class UserServiceImpl implements UserService {
         return UserDTO.build(userRepository.findById(userDetails.getId()).get());
     }
 }
+
