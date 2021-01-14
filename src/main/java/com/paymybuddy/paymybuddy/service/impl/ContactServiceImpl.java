@@ -48,5 +48,6 @@ public class ContactServiceImpl implements ContactService {
                     .setContact(new User().setId(contactId))
             );
         }
+        logger.info("Request add contact failed");
     }
 }

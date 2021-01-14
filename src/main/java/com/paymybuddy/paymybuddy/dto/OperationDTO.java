@@ -3,6 +3,7 @@ package com.paymybuddy.paymybuddy.dto;
 import com.paymybuddy.paymybuddy.model.Operation;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class OperationDTO {
 
@@ -65,5 +66,20 @@ public class OperationDTO {
     public OperationDTO setAmount(double amount) {
         this.amount = amount;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OperationDTO that = (OperationDTO) o;
+        return Double.compare(that.amount, amount) == 0 &&
+                emitter.equals(that.emitter) &&
+                receiver.equals(that.receiver);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(emitter, receiver, amount);
     }
 }

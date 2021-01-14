@@ -1,13 +1,14 @@
 package com.paymybuddy.paymybuddy.service;
 
-import com.paymybuddy.paymybuddy.repository.OperationRepository;
+import com.paymybuddy.paymybuddy.model.Contact;
+import com.paymybuddy.paymybuddy.repository.ContactRepository;
 import com.paymybuddy.paymybuddy.repository.UserRepository;
 import com.paymybuddy.paymybuddy.service.data.TestData;
-import com.paymybuddy.paymybuddy.service.impl.UserServiceImpl;
-import org.assertj.core.api.Assertions;
+import com.paymybuddy.paymybuddy.service.impl.ContactServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,17 +22,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Collections;
 
 @ExtendWith(SpringExtension.class)
-@Import(UserServiceImpl.class)
-public class UserServiceTest {
+@Import(ContactServiceImpl.class)
+public class ContactServiceTest {
 
     @MockBean
-    private UserRepository userRepositoryMocked;
+    private ContactRepository contactRepository;
 
     @MockBean
-    private OperationRepository operationRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private UserService userService;
+    private ContactService contactService;
 
     @BeforeEach
     void setUp() {
@@ -41,14 +42,10 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getInformationFromUserTest() {
-        Mockito.when(userRepositoryMocked.findById(Mockito.anyLong())).thenReturn(TestData.getOptionalUserData());
-        Assertions.assertThat(userService.getPersonalInformation(SecurityContextHolder.getContext().getAuthentication())).isEqualTo(TestData.getUserDTOFromUserData());
-    }
-
-    @Test
-    public void getOperationFromUserWithoutLimitTest() {
-        Mockito.when(operationRepository.findByEmailReceiverOrEmitterWithLimitOrderByDate(Mockito.anyString(), Mockito.any())).thenReturn(TestData.getOperationList());
-        Assertions.assertThat(userService.getOperations(null, SecurityContextHolder.getContext().getAuthentication())).isEqualTo(TestData.getOperationDTOList());
+    public void addContactTest() {
+        Mockito.when(userRepository.findIdByEmail(Mockito.anyString())).thenReturn(2L);
+        Mockito.when(contactRepository.findByUserIdAndContactId(Mockito.anyLong(), Mockito.anyLong())).thenReturn(null);
+        contactService.addContact("clement", SecurityContextHolder.getContext().getAuthentication());
+        Mockito.verify(contactRepository, Mockito.times(1)).save(Mockito.any());
     }
 }

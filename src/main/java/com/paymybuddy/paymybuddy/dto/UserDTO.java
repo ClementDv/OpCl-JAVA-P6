@@ -56,7 +56,9 @@ public class UserDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserDTO userDTO = (UserDTO) o;
-        return id.equals(userDTO.id);
+        return Double.compare(userDTO.balance, balance) == 0 &&
+                Objects.equals(id, userDTO.id) &&
+                Objects.equals(email, userDTO.email);
     }
 
     @Override
