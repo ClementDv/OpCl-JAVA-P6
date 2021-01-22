@@ -2,7 +2,7 @@ package com.paymybuddy.paymybuddy.service;
 
 import com.paymybuddy.paymybuddy.repository.OperationRepository;
 import com.paymybuddy.paymybuddy.repository.UserRepository;
-import com.paymybuddy.paymybuddy.service.data.TestData;
+import com.paymybuddy.paymybuddy.data.TestData;
 import com.paymybuddy.paymybuddy.service.impl.UserServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

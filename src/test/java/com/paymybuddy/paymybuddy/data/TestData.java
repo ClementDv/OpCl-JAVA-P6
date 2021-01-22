@@ -1,4 +1,4 @@
-package com.paymybuddy.paymybuddy.service.data;
+package com.paymybuddy.paymybuddy.data;
 
 import com.paymybuddy.paymybuddy.dto.OperationDTO;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
@@ -52,10 +52,21 @@ public class TestData {
     }
 
     public static UserDTO getUserDTOTransferMoneyToBankOrUser() {
-        return new UserDTO(1L , "test@test.com" , 899.99);
+        return new UserDTO(1L, "test@test.com", 899.99);
     }
 
     public static UserDTO getUserDTOTransgerMoneyFromBank() {
-        return new UserDTO(1L , "test@test.com" , 1099.99);
+        return new UserDTO(1L, "test@test.com", 1099.99);
+    }
+
+    public static List<Operation> getOperationListRepositoryTest() {
+        return new ArrayList<>(Arrays.asList(
+                new Operation("BNK_BNP", "USR_clement@ocr.fr", 300.00).setId(2L),
+                new Operation("USR_clement@ocr.fr", "BNK_BNP", 200.00).setId(1L)
+        ));
+    }
+
+    public static UserDetailsImpl getUserDetailsImplFromUser() {
+        return UserDetailsImpl.build(getTrueUserData());
     }
 }

@@ -23,7 +23,7 @@ public class Operation {
     private String receiver;
 
     @CreationTimestamp
-    @Column(name = "at", insertable = false, nullable = false, updatable = false)
+    @Column(name = "at", insertable = false, updatable = false)
     private LocalDateTime at;
 
     @Column(name = "amount", nullable = false, updatable = false)
@@ -89,9 +89,9 @@ public class Operation {
         if (o == null || getClass() != o.getClass()) return false;
         Operation operation = (Operation) o;
         return Double.compare(operation.amount, amount) == 0 &&
-                Objects.equals(emitter, operation.emitter) &&
-                Objects.equals(receiver, operation.receiver) &&
-                Objects.equals(at, operation.at);
+                id.equals(operation.id) &&
+                emitter.equals(operation.emitter) &&
+                receiver.equals(operation.receiver);
     }
 
     @Override

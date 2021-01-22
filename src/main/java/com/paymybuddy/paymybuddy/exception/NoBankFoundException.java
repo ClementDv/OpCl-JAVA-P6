@@ -9,16 +9,6 @@ public class NoBankFoundException extends RuntimeException {
         this.bankName = bankName;
     }
 
-    public NoBankFoundException(String message, String bankName) {
-        super(message);
-        this.bankName = bankName;
-    }
-
-    public NoBankFoundException(String message, Throwable cause, String bankName) {
-        super(message, cause);
-        this.bankName = bankName;
-    }
-
     public String getBankName() {
         return bankName;
     }

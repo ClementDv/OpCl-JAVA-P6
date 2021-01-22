@@ -1,6 +1,6 @@
 package com.paymybuddy.paymybuddy.security.config;
 
-import com.paymybuddy.paymybuddy.security.service.LoggerService;
+import com.paymybuddy.paymybuddy.security.service.AuthenticationService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private LoggerService loggerService;
+    private AuthenticationService authenticationService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -48,7 +48,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.loggerService.loadUserByUsername(email);
+            UserDetails userDetails = this.authenticationService.loadUserByUsername(email);
 
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 

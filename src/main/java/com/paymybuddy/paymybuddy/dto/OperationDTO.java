@@ -45,6 +45,8 @@ public class OperationDTO {
         return receiver;
     }
 
+
+
     public OperationDTO setReceiver(String receiver) {
         this.receiver = receiver;
         return this;
@@ -81,5 +83,15 @@ public class OperationDTO {
     @Override
     public int hashCode() {
         return Objects.hash(emitter, receiver, amount);
+    }
+
+    @Override
+    public String toString() {
+        return "OperationDTO{" +
+                "emitter='" + emitter + '\'' +
+                ", receiver='" + receiver + '\'' +
+                ", at=" + at +
+                ", amount=" + amount +
+                '}';
     }
 }
