@@ -2,10 +2,16 @@ package com.paymybuddy.paymybuddy.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.paymybuddy.paymybuddy.config.AuthenticationMananagerProvider;
+import com.paymybuddy.paymybuddy.config.TestConfig;
 import com.paymybuddy.paymybuddy.data.TestData;
 import com.paymybuddy.paymybuddy.dto.OperationDTO;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
+import com.paymybuddy.paymybuddy.exception.*;
+import com.paymybuddy.paymybuddy.security.config.JwtAuthenticationEntryPoint;
+import com.paymybuddy.paymybuddy.security.config.JwtTokenUtil;
+import com.paymybuddy.paymybuddy.security.model.request.JwtRequest;
+import com.paymybuddy.paymybuddy.security.model.response.JwtResponse;
+import com.paymybuddy.paymybuddy.security.service.AuthenticationService;
 import com.paymybuddy.paymybuddy.service.ContactService;
 import com.paymybuddy.paymybuddy.service.TransferService;
 import com.paymybuddy.paymybuddy.service.UserService;
@@ -13,6 +19,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,6 +27,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,16 +39,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-@ExtendWith(SpringExtension.class) // JUnit5
 @WebMvcTest(ApiController.class)
-@ContextConfiguration(classes = {AuthenticationMananagerProvider.class})
-// Cette configuration fournit le Bean AuthenticationManager pour le context
-@Import({ApiController.class}) // Important de l'importer sinon on des 404
+@Import({TestConfig.class, JwtAuthenticationEntryPoint.class})
 public class ControllerTest {
 
     /*
@@ -55,6 +61,14 @@ public class ControllerTest {
     @MockBean
     private ContactService contactService;
 
+    @MockBean
+    AuthenticationService authenticationService;
+
+    @MockBean
+    JwtTokenUtil jwtTokenUtil;
+
+    @MockBean
+    AuthenticationManager authenticationManager;
 
     /**
      * Important pour tester le JSON de la réponse HTTP
@@ -78,8 +92,20 @@ public class ControllerTest {
     @Test
     public void transferMoneyToBank() throws Exception {
         // GIVEN
-        Mockito.when(transferService.transferMoneyToBank(Mockito.anyString(), Mockito.anyDouble(), Mockito.any()))
-                .thenReturn(TestData.getUserDTOTransferMoneyToBankOrUser());
+        Mockito.when(transferService.transferMoneyToBank(Mockito.anyString(), Mockito.anyDouble(), Mockito.any())).thenAnswer(a -> {
+            String bankName = a.getArgument(0);
+            double amount = a.getArgument(1);
+            if ("invalid".equals(bankName)) {
+                throw new NoBankFoundException(bankName);
+            }
+            if (amount < 0) {
+                throw new NonValidAmountException(amount);
+            }
+            if (amount > 100) {
+                throw new NoEnoughMoneyOnBalanceException(100, amount);
+            }
+            return TestData.getUserDTOTransferMoneyToBankOrUser();
+        });
 
         // WHEN
         MvcResult result = mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank?bank=BNP&amount=100")
@@ -88,6 +114,14 @@ public class ControllerTest {
         // THEN
         Assertions.assertThat(result.getResponse().getContentAsString())
                 .isEqualTo(jsonTester.write(TestData.getUserDTOTransferMoneyToBankOrUser()).getJson());
+
+        // Test errors
+        mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank?bank=invalid&amount=100")
+                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isPreconditionFailed()).andReturn();
+        mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank?bank=BNP&amount=-200")
+                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
+        mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank?bank=BNP&amount=200")
+                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
 
     @Test
@@ -155,8 +189,27 @@ public class ControllerTest {
 
     @Test
     public void addContactTest(@Autowired MockMvc mockMvc) throws Exception {
+
+        // GIVEN
+        Mockito.doAnswer(a -> {
+                    String contactEmail = a.getArgument(0);
+                    if (contactEmail.equals("")) {
+                        throw new NoUserFoundException(contactEmail);
+                    }
+                    if (contactEmail.equals("alreadyExist")) {
+                        throw new ContactAlreadyAssignedException(1L, 2L);
+                    }
+                    return null;
+                }
+        ).when(contactService).addContact(Mockito.anyString(), Mockito.any());
+
+        // THEN
         mvc.perform(MockMvcRequestBuilders.post("/paymybuddy/addContact?contactEmail=test@test.com")
                 .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
-
+        // test errors
+        mvc.perform(MockMvcRequestBuilders.post("/paymybuddy/addContact?contactEmail=")
+                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isPreconditionFailed()).andReturn();
+        mvc.perform(MockMvcRequestBuilders.post("/paymybuddy/addContact?contactEmail=alreadyExist")
+                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
     }
 }

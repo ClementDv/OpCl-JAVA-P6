@@ -2,6 +2,7 @@ package com.paymybuddy.paymybuddy.security.service;
 
 import com.paymybuddy.paymybuddy.exception.NoUserFoundException;
 import com.paymybuddy.paymybuddy.exception.NonValidEmailLogin;
+import com.paymybuddy.paymybuddy.exception.UserAlreadyExistException;
 import com.paymybuddy.paymybuddy.model.User;
 import com.paymybuddy.paymybuddy.repository.UserRepository;
 import com.paymybuddy.paymybuddy.security.config.JwtTokenUtil;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -29,7 +31,7 @@ public class AuthenticationService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
-    private WebSecurityConfig webSecurityConfig;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -65,10 +67,10 @@ public class AuthenticationService implements UserDetailsService {
     public String save(JwtRequest registerRequest) {
         checkValidMail(registerRequest.getEmail());
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new NoUserFoundException(registerRequest.getEmail());
+            throw new UserAlreadyExistException(registerRequest.getEmail());
         }
         User user = new User(registerRequest.getEmail(),
-                webSecurityConfig.passwordEncoder().encode(registerRequest.getPassword()));
+                passwordEncoder.encode(registerRequest.getPassword()));
 
         userRepository.save(user);
         logger.info("Request register successful");

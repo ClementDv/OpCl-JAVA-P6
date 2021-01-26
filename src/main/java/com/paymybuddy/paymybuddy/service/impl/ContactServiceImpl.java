@@ -51,3 +51,4 @@ public class ContactServiceImpl implements ContactService {
         logger.info("Request add contact failed");
     }
 }
+

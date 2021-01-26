@@ -1,6 +1,7 @@
 package com.paymybuddy.paymybuddy.exception;
 
 import com.paymybuddy.paymybuddy.dto.ErrorResponse;
+import com.paymybuddy.paymybuddy.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
     private final Logger logger = LogManager.getLogger(ControllerAdvisor.class);
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    @ResponseBody
+    public ResponseEntity<?> handleUserAlreadyExistException(UserAlreadyExistException e) {
+        logger.error("User already exist for email {}", e.getEmail());
+        return response(new ErrorResponse(ErrorCodesEnum.CONTACT_ALREADY_ASSIGNED.getCode(), ErrorCodesEnum.CONTACT_ALREADY_ASSIGNED.getError(), e.getMessage())
+                .withMetadata("email", e.getEmail()));
+    }
 
     @ExceptionHandler(ContactAlreadyAssignedException.class)
     @ResponseBody

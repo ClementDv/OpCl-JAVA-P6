@@ -17,6 +17,7 @@ import com.paymybuddy.paymybuddy.service.TransferService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -75,12 +76,13 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public UserDTO transferMoneyToUser(String email, double amount, Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (email.equals(userDetails.getUsername())) throw new NoUserFoundException(email);
         checkAmountIsValidHundredthsDecimalMax(amount);
         Long userTransferId = userRepository.findIdByEmail(email);
         if (userTransferId == null) {
             throw new NoUserFoundException(email);
         } else {
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             Long currentUserId = userDetails.getId();
             double userBalance = userRepository.findBalanceById(currentUserId);
             if (userBalance >= amount) {
