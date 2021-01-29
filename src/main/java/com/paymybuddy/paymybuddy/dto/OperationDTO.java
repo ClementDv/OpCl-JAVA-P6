@@ -26,10 +26,25 @@ public class OperationDTO {
     }
 
     public OperationDTO build(Operation operation) {
-        return new OperationDTO().setEmitter(operation.getEmitter())
-                .setReceiver(operation.getReceiver())
-                .setAt(operation.getAt())
-                .setAmount(operation.getAmount());
+        if (operation.getEmitterBankId() != null && operation.getReceiverUserId() != null) {
+            return new OperationDTO().setEmitter(operation.getEmitterBankId().getCode())
+                    .setReceiver(operation.getReceiverUserId().getCode())
+                    .setAt(operation.getAt())
+                    .setAmount(operation.getAmount());
+        }
+        else if (operation.getEmitterUserId() != null && operation.getReceiverBankId() != null) {
+            return new OperationDTO().setEmitter(operation.getEmitterUserId().getCode())
+                    .setReceiver(operation.getReceiverBankId().getCode())
+                    .setAt(operation.getAt())
+                    .setAmount(operation.getAmount());
+        }
+        else if (operation.getEmitterUserId() != null && operation.getReceiverUserId() != null) {
+            return new OperationDTO().setEmitter(operation.getEmitterUserId().getCode())
+                    .setReceiver(operation.getReceiverUserId().getCode())
+                    .setAt(operation.getAt())
+                    .setAmount(operation.getAmount());
+        }
+        return null;
     }
 
     public String getEmitter() {
@@ -44,7 +59,6 @@ public class OperationDTO {
     public String getReceiver() {
         return receiver;
     }
-
 
 
     public OperationDTO setReceiver(String receiver) {

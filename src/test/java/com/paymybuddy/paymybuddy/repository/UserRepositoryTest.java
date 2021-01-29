@@ -69,12 +69,4 @@ public class UserRepositoryTest {
         testEntityManager.flush();
         assertThat(userRepository.findBalanceById(1L)).isEqualTo(222.22);
     }
-
-    @Test
-    void updateBalanceByIdTest() {
-        testEntityManager.persist(new User("clement@ocr.fr", "pwd", 222.22));
-        testEntityManager.flush();
-        userRepository.updateBalanceById(300.00, 1L);
-        assertThat(userRepository.findBalanceById(1L)).isEqualTo(300.00);
-    }
 }

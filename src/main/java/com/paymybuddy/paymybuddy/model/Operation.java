@@ -4,7 +4,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 
 
@@ -16,15 +15,28 @@ public class Operation {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "emitter", nullable = false, updatable = false)
-    private String emitter;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "emitterBankId", updatable = false)
+    private Bank emitterBankId;
 
-    @Column(name = "receiver", nullable = false, updatable = false)
-    private String receiver;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "emitterUserId", updatable = false)
+    private User emitterUserId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiverBankId", updatable = false)
+    private Bank receiverBankId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiverUserId", updatable = false)
+    private User receiverUserId;
 
     @CreationTimestamp
     @Column(name = "at", insertable = false, updatable = false)
     private LocalDateTime at;
+
+    @Column(name ="description")
+    private String description;
 
     @Column(name = "amount", nullable = false, updatable = false)
     private double amount;
@@ -32,9 +44,12 @@ public class Operation {
     public Operation() {
     }
 
-    public Operation(String emitter, String receiver, double amount) {
-        this.emitter = emitter;
-        this.receiver = receiver;
+    public Operation(Bank emitterBankId, User emitterUserId, Bank receiverBankId, User receiverUserId, String description, double amount) {
+        this.emitterBankId = emitterBankId;
+        this.emitterUserId = emitterUserId;
+        this.receiverBankId = receiverBankId;
+        this.receiverUserId = receiverUserId;
+        this.description = description;
         this.amount = amount;
     }
 
@@ -47,21 +62,39 @@ public class Operation {
         return this;
     }
 
-    public String getEmitter() {
-        return emitter;
+    public Bank getEmitterBankId() {
+        return emitterBankId;
     }
 
-    public Operation setEmitter(String emitter) {
-        this.emitter = emitter;
+    public Operation setEmitterBankId(Bank emitterBankId) {
+        this.emitterBankId = emitterBankId;
         return this;
     }
 
-    public String getReceiver() {
-        return receiver;
+    public User getEmitterUserId() {
+        return emitterUserId;
     }
 
-    public Operation setReceiver(String receiver) {
-        this.receiver = receiver;
+    public Operation setEmitterUserId(User emitterUserId) {
+        this.emitterUserId = emitterUserId;
+        return this;
+    }
+
+    public Bank getReceiverBankId() {
+        return receiverBankId;
+    }
+
+    public Operation setReceiverBankId(Bank receiverBankId) {
+        this.receiverBankId = receiverBankId;
+        return this;
+    }
+
+    public User getReceiverUserId() {
+        return receiverUserId;
+    }
+
+    public Operation setReceiverUserId(User receiverUserId) {
+        this.receiverUserId = receiverUserId;
         return this;
     }
 
@@ -71,6 +104,15 @@ public class Operation {
 
     public Operation setAt(LocalDateTime at) {
         this.at = at;
+        return this;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Operation setDescription(String description) {
+        this.description = description;
         return this;
     }
 
@@ -90,23 +132,16 @@ public class Operation {
         Operation operation = (Operation) o;
         return Double.compare(operation.amount, amount) == 0 &&
                 id.equals(operation.id) &&
-                emitter.equals(operation.emitter) &&
-                receiver.equals(operation.receiver);
+                Objects.equals(emitterBankId, operation.emitterBankId) &&
+                Objects.equals(emitterUserId, operation.emitterUserId) &&
+                Objects.equals(receiverBankId, operation.receiverBankId) &&
+                Objects.equals(receiverUserId, operation.receiverUserId) &&
+                at.equals(operation.at) &&
+                description.equals(operation.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(emitter, receiver, at, amount);
-    }
-
-    @Override
-    public String toString() {
-        return "Operation{" +
-                "id=" + id +
-                ", emitter=" + emitter +
-                ", receiver=" + receiver +
-                ", at=" + at +
-                ", amount=" + amount +
-                '}';
+        return Objects.hash(id, emitterBankId, emitterUserId, receiverBankId, receiverUserId, at, description, amount);
     }
 }

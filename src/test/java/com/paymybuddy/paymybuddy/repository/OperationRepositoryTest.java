@@ -24,7 +24,7 @@ public class OperationRepositoryTest {
     @Autowired
     private TestEntityManager testEntityManager;
 
-    @Test
+   /* @Test
     void findByEmailReceiverOrEmitterWithLimitOrderByDateTest(){
         testEntityManager.persist(new Operation("USR_clement@ocr.fr", "BNK_BNP", 200.00));
         testEntityManager.persist(new Operation("BNK_BNP", "USR_clement@ocr.fr", 300.00));
@@ -32,5 +32,5 @@ public class OperationRepositoryTest {
         assertThat(operationRepository.findByEmailReceiverOrEmitterWithLimitOrderByDate("USR_clement@ocr.fr", PageRequest.of(0, 10)))
                 .isEqualTo(TestData.getOperationListRepositoryTest());
     }
-
+*/
 }

@@ -15,15 +15,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    Optional<User> findById(Long id);
-
     @Query("select id from User where email = ?1")
     Long findIdByEmail(String contactEmail);
 
     @Query("select balance from User where id = ?1")
     Double findBalanceById(Long id);
-
-    @Modifying
-    @Query("update User set balance = ?1 where id = ?2")
-    void updateBalanceById(Double amount, Long id);
 }

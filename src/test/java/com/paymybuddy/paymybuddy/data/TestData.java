@@ -29,7 +29,7 @@ public class TestData {
         return Optional.of(getTrueUserData());
     }
 
-    public static List<Operation> getOperationList() {
+    /*public static List<Operation> getOperationList() {
         return new ArrayList<>(Arrays.asList(
                 new Operation("USR_clement@gmail.com", "BNK_BNP", 2000).setAt(null),
                 new Operation("USR_clement@gmail.com", "BNK_LCL", 600).setAt(null),
@@ -38,7 +38,7 @@ public class TestData {
                 new Operation("USR_gamin@gmail.com", "USER_test@test.Com", 300).setAt(null),
                 new Operation("USR_jean@gmail.com", "BNK_TEST", 150).setAt(null))
         );
-    }
+    }*/
 
     public static List<OperationDTO> getOperationDTOList() {
         return new ArrayList<>(Arrays.asList(
@@ -59,12 +59,12 @@ public class TestData {
         return new UserDTO(1L, "test@test.com", 1099.99);
     }
 
-    public static List<Operation> getOperationListRepositoryTest() {
+   /* public static List<Operation> getOperationListRepositoryTest() {
         return new ArrayList<>(Arrays.asList(
                 new Operation("BNK_BNP", "USR_clement@ocr.fr", 300.00).setId(2L),
                 new Operation("USR_clement@ocr.fr", "BNK_BNP", 200.00).setId(1L)
         ));
-    }
+    }*/
 
     public static UserDetailsImpl getUserDetailsImplFromUser() {
         return UserDetailsImpl.build(getTrueUserData());

@@ -43,11 +43,11 @@ public class AuthenticationService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetailsImpl loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetailsImpl loadUserByUsername(String email) {
 
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException(email);
+            throw new NoUserFoundException(email);
         }
         return UserDetailsImpl.build(user);
     }

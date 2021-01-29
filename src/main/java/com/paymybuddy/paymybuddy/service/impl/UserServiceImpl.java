@@ -35,7 +35,8 @@ public class UserServiceImpl implements UserService {
     public List<OperationDTO> getOperations(Integer limit, Authentication authentication) {
         if (limit == null) limit = OPERATION_LIMIT_DEFAULT_VALUE;
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<Operation> operationList = operationRepository.findByEmailReceiverOrEmitterWithLimitOrderByDate("USR_" + userDetails.getUsername(), PageRequest.of(0, limit));
+        List<Operation> operationList = operationRepository.findByEmailReceiverOrEmitterWithLimitOrderByDate(userDetails.getId(), PageRequest.of(0, limit));
+        System.out.println("\nOperation List : " + operationList + "\n");
         return operationList.stream().map(operation -> new OperationDTO().build(operation)).collect(Collectors.toList());
     }
 

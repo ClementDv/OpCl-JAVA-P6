@@ -1,6 +1,7 @@
 package com.paymybuddy.paymybuddy.model;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -16,6 +17,12 @@ public class Bank implements MoneyHolder {
 
     @Column(name = "address", nullable = false)
     private String address;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "emitterBankId")
+    private List<Operation> emitterBankListOperation;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "receiverBankId")
+    private List<Operation> receiverBankListOperation;
 
     @Override
     public String getCode() {

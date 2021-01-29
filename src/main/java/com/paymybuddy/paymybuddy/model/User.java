@@ -23,8 +23,17 @@ public class User implements MoneyHolder {
     @Column(name = "balance", nullable = false)
     private double balance;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "emitterUserId")
+    private List<Operation> emitterUserListOperation;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "receiverUserId")
+    private List<Operation> receiverUserListOperation;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Contact> contacts;
+    private List<Contact> userListContact;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contact")
+    private List<Contact> contactListContact;
 
     @Override
     public String getCode() {
@@ -86,16 +95,14 @@ public class User implements MoneyHolder {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Double.compare(user.balance, balance) == 0 &&
-                Objects.equals(id, user.id) &&
+        return Objects.equals(id, user.id) &&
                 Objects.equals(email, user.email) &&
-                Objects.equals(password, user.password) &&
-                Objects.equals(contacts, user.contacts);
+                Objects.equals(password, user.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, password, balance, contacts);
+        return Objects.hash(id, email, password, balance);
     }
 
     @Override
@@ -106,7 +113,6 @@ public class User implements MoneyHolder {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", balance=" + balance +
-                ", contacts=" + contacts +
                 '}';
     }
 }

@@ -6,22 +6,20 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
              http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet id="create_contact_table" author="Clement" >
+    <changeSet id="create_contact_table" author="Clement">
         <createTable tableName="contacts">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="user_id" type="BIGINT">
-                <constraints primaryKey="true" nullable="false"/>
+            <column name="userId" type="BIGINT">
             </column>
-            <column name="contact_id" type="BIGINT">
-                <constraints primaryKey="true" nullable="false"/>
+            <column name="contactId" type="BIGINT">
             </column>
         </createTable>
-        <addUniqueConstraint tableName="contacts" columnNames="user_id, contact_id"/>
+        <addUniqueConstraint tableName="contacts" columnNames="userId, contactId"/>
     </changeSet>
 
-    <changeSet author="Clement" id="2">
+    <changeSet author="Clement" id="create_user_table">
         <createTable tableName="users">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" unique="true"/>
@@ -47,16 +45,26 @@
             <column name="address" type="varchar(255)"/>
         </createTable>
         <addUniqueConstraint tableName="banks" columnNames="name, address"/>
-        <insert tableName="banks"><column name="name" value="LCL"/>
-            <column name="address" value="30 Boulevard de Magenta"/></insert>
-        <insert tableName="banks"><column name="name" value="BNP"/>
-            <column name="address" value="41 Avenue de l'Opéra"/></insert>
-        <insert tableName="banks"><column name="name" value="HELLOBANK"/>
-            <column name="address" value=""/></insert>
-        <insert tableName="banks"><column name="name" value="Crédit Agricole"/>
-            <column name="address" value="91 bd Pasteur"/></insert>
-        <insert tableName="banks"><column name="name" value="Groupama"/>
-            <column name="address" value="8-10, rue d'Astorg"/></insert>
+        <insert tableName="banks">
+            <column name="name" value="LCL"/>
+            <column name="address" value="30 Boulevard de Magenta"/>
+        </insert>
+        <insert tableName="banks">
+            <column name="name" value="BNP"/>
+            <column name="address" value="41 Avenue de l'Opéra"/>
+        </insert>
+        <insert tableName="banks">
+            <column name="name" value="HELLOBANK"/>
+            <column name="address" value=""/>
+        </insert>
+        <insert tableName="banks">
+            <column name="name" value="Crédit Agricole"/>
+            <column name="address" value="91 bd Pasteur"/>
+        </insert>
+        <insert tableName="banks">
+            <column name="name" value="Groupama"/>
+            <column name="address" value="8-10, rue d'Astorg"/>
+        </insert>
     </changeSet>
 
     <changeSet id="create_operations_table" author="Clement">
@@ -64,18 +72,45 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="emitter" type="varchar(50)"><constraints nullable="false" /></column>
-            <column name="receiver" type="varchar(50)"><constraints nullable="false" /></column>
-            <column name="amount" type="DOUBLE(12, 2)"><constraints nullable="false" /></column>
-            <column name="at" type="datetime" defaultValueComputed="now()"><constraints nullable="false" /></column>
+            <column name="emitterBankId" type="BIGINT">
+            </column>
+            <column name="emitterUserId" type="BIGINT">
+            </column>
+            <column name="receiverBankId" type="BIGINT">
+            </column>
+            <column name="receiverUserId" type="BIGINT">
+            </column>
+            <column name="amount" type="DOUBLE(12, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="at" type="datetime" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 
-    <changeSet author="Clement" id="4">
-        <addForeignKeyConstraint baseColumnNames="contact_id" baseTableName="contacts" constraintName="contact_id_fk"
-                                 deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="CASCADE"
-                                 referencedColumnNames="id" referencedTableName="users" validate="true"/>
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="contacts" constraintName="user_id_fk"
+    <changeSet author="Clement" id="fk_contact_table">
+        <addForeignKeyConstraint baseColumnNames="contactId" baseTableName="contacts" constraintName="contactIdFk"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="userId" baseTableName="contacts" constraintName="userIdFk"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet author="Clement" id="fk_operation_table">
+        <addForeignKeyConstraint baseColumnNames="emitterBankId" baseTableName="operations"
+                                 constraintName="emitterBankIdFk"
+                                 referencedColumnNames="id" referencedTableName="banks"/>
+        <addForeignKeyConstraint baseColumnNames="emitterUserId" baseTableName="operations"
+                                 constraintName="emitterUserIdFk"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="receiverBankId" baseTableName="operations"
+                                 constraintName="receiverBankIdFk"
+                                 referencedColumnNames="id" referencedTableName="banks"/>
+        <addForeignKeyConstraint baseColumnNames="receiverUserId" baseTableName="operations"
+                                 constraintName="receiverUserIdFk"
                                  referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
 </databaseChangeLog>

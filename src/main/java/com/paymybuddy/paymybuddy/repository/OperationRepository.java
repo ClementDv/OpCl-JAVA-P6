@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface OperationRepository extends JpaRepository<Operation, Long> {
 
-    @Query("select o from Operation o where (o.emitter = :username or o.receiver = :username) order by o.at desc")
-    List<Operation> findByEmailReceiverOrEmitterWithLimitOrderByDate(String username, Pageable pageable);
+    @Query("select o from Operation o where (o.emitterUserId.id = :id or o.receiverUserId.id = :id) order by o.at desc")
+    List<Operation> findByEmailReceiverOrEmitterWithLimitOrderByDate(Long id, Pageable pageable);
 }

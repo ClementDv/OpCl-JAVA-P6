@@ -12,11 +12,11 @@ public class Contact {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contact_id")
+    @JoinColumn(name = "contactId")
     private User contact;
 
     public Contact() {
