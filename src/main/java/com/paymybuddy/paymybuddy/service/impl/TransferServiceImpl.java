@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddy.service.impl;
 
+import com.paymybuddy.paymybuddy.dto.TransferRequest;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
 import com.paymybuddy.paymybuddy.exception.NoBankFoundException;
 import com.paymybuddy.paymybuddy.exception.NoEnoughMoneyOnBalanceException;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Time;
 
 @Service
 @Transactional
@@ -44,56 +44,58 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public UserDTO transferMoneyToBank(String bankName, double amount, Authentication authentication) {
-        checkAmountIsValid(amount);
-        Bank bank = checkBankisValid(bankName);
+    public UserDTO transferMoneyToBank(TransferRequest transferRequest, Authentication authentication) {
+        checkAmountIsValid(transferRequest.getAmount());
+        Bank bank = checkBankisValid(transferRequest.getName());
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User currentUser = userRepository.getOne(userDetails.getId());
-        if (currentUser.getBalance() >= amount) {
+        if (currentUser.getBalance() >= transferRequest.getAmount()) {
             logger.info("Request transfer money to bank successful");
-            currentUser.setBalance(round(currentUser.getBalance() - amount, 2));
+            currentUser.setBalance(round(currentUser.getBalance() - transferRequest.getAmount(), 2));
             userRepository.save(currentUser);
-            addTransferUserToBankOperation(currentUser, bank, amount);
+            addTransferUserToBankOperation(currentUser, bank, transferRequest);
             return UserDTO.build(currentUser);
         }
         logger.info("Request transfer money to bank failed");
-        throw new NoEnoughMoneyOnBalanceException(currentUser.getBalance(), amount);
+        throw new NoEnoughMoneyOnBalanceException(currentUser.getBalance(), transferRequest.getAmount());
     }
 
     @Override
-    public UserDTO transferMoneyFromBank(String bankName, double amount, Authentication authentication) {
-        checkAmountIsValid(amount);
-        Bank bank = checkBankisValid(bankName);
+    public UserDTO transferMoneyFromBank(TransferRequest transferRequest, Authentication authentication) {
+        checkAmountIsValid(transferRequest.getAmount());
+        Bank bank = checkBankisValid(transferRequest.getName());
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User currentUser = userRepository.getOne(userDetails.getId());
-        currentUser.setBalance(round((currentUser.getBalance() + amount), 2));
+        currentUser.setBalance(round((currentUser.getBalance() + transferRequest.getAmount()), 2));
         userRepository.save(currentUser);
         logger.info("Request transfer money to bank successful");
-        addTransferBankToUserOperation(bank, currentUser, amount);
+        addTransferBankToUserOperation(bank, currentUser, transferRequest);
         return UserDTO.build(currentUser);
     }
 
     @Override
-    public UserDTO transferMoneyToUser(String email, double amount, Authentication authentication) {
+    public UserDTO transferMoneyToUser(TransferRequest transferRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User currentUser = userRepository.getOne(userDetails.getId());
-        if (email.equals(userDetails.getUsername())) throw new NoUserFoundException(email);
-        checkAmountIsValid(amount);
-        User transferUser = userRepository.findByEmail(email);
+        if (transferRequest.getName().equals(userDetails.getUsername()))
+            throw new NoUserFoundException(transferRequest.getName());
+        checkAmountIsValid(transferRequest.getAmount());
+        User transferUser = userRepository.findByEmail(transferRequest.getName());
         if (transferUser == null) {
-            throw new NoUserFoundException(email);
+            throw new NoUserFoundException(transferRequest.getName());
         } else {
-            if (currentUser.getBalance() >= amount) {
-                transferUser.setBalance(round(transferUser.getBalance() + percentageDeduction(amount),2));
+            if (currentUser.getBalance() >= transferRequest.getAmount()) {
+                transferUser.setBalance(round(transferUser.getBalance() + percentageDeduction(
+                        transferRequest.getAmount()), 2));
                 userRepository.save(transferUser);
-                currentUser.setBalance(round(currentUser.getBalance() - amount, 2));
+                currentUser.setBalance(round(currentUser.getBalance() - transferRequest.getAmount(), 2));
                 userRepository.save(currentUser);
                 logger.info("Request transfer money to user successful");
-                addTransferUserToUserOperation(currentUser, transferUser, amount);
+                addTransferUserToUserOperation(currentUser, transferUser, transferRequest);
                 return UserDTO.build(currentUser);
             }
             logger.info("Request transfer money to user failed");
-            throw new NoEnoughMoneyOnBalanceException(currentUser.getBalance(), amount);
+            throw new NoEnoughMoneyOnBalanceException(currentUser.getBalance(), transferRequest.getAmount());
         }
     }
 
@@ -125,15 +127,18 @@ public class TransferServiceImpl implements TransferService {
         return bd.doubleValue();
     }
 
-    private void addTransferUserToBankOperation(User emitter,  Bank receiver, double amount) {
-        operationRepository.save(new Operation(null, emitter, receiver, null, "TEST", amount));
+    private void addTransferUserToBankOperation(User emitter, Bank receiver, TransferRequest transferRequest) {
+        operationRepository.save(new Operation(null, emitter, receiver, null,
+                transferRequest.getDescription(), transferRequest.getAmount()));
     }
 
-    private void addTransferUserToUserOperation(User emitter,  User receiver, double amount) {
-        operationRepository.save(new Operation(null, emitter, null, receiver, "TEST", amount));
+    private void addTransferUserToUserOperation(User emitter, User receiver, TransferRequest transferRequest) {
+        operationRepository.save(new Operation(null, emitter, null, receiver,
+                transferRequest.getDescription(), transferRequest.getAmount()));
     }
 
-    private void addTransferBankToUserOperation(Bank emitter,  User receiver, double amount) {
-        operationRepository.save(new Operation(emitter, null, null, receiver, "TEST", amount));
+    private void addTransferBankToUserOperation(Bank emitter, User receiver, TransferRequest transferRequest) {
+        operationRepository.save(new Operation(emitter, null, null, receiver,
+                transferRequest.getDescription(), transferRequest.getAmount()));
     }
 }

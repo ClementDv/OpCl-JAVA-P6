@@ -15,14 +15,17 @@ public class OperationDTO {
 
     private double amount;
 
+    private String description;
+
     public OperationDTO() {
     }
 
-    public OperationDTO(String emitter, String receiver, LocalDateTime at, double amount) {
+    public OperationDTO(String emitter, String receiver, LocalDateTime at, double amount, String description) {
         this.emitter = emitter;
         this.receiver = receiver;
         this.at = at;
         this.amount = amount;
+        this.description = description;
     }
 
     public OperationDTO build(Operation operation) {
@@ -30,19 +33,20 @@ public class OperationDTO {
             return new OperationDTO().setEmitter(operation.getEmitterBankId().getCode())
                     .setReceiver(operation.getReceiverUserId().getCode())
                     .setAt(operation.getAt())
-                    .setAmount(operation.getAmount());
-        }
-        else if (operation.getEmitterUserId() != null && operation.getReceiverBankId() != null) {
+                    .setAmount(operation.getAmount())
+                    .setDescription(operation.getDescription());
+        } else if (operation.getEmitterUserId() != null && operation.getReceiverBankId() != null) {
             return new OperationDTO().setEmitter(operation.getEmitterUserId().getCode())
                     .setReceiver(operation.getReceiverBankId().getCode())
                     .setAt(operation.getAt())
-                    .setAmount(operation.getAmount());
-        }
-        else if (operation.getEmitterUserId() != null && operation.getReceiverUserId() != null) {
+                    .setAmount(operation.getAmount())
+                    .setDescription(operation.getDescription());
+        } else if (operation.getEmitterUserId() != null && operation.getReceiverUserId() != null) {
             return new OperationDTO().setEmitter(operation.getEmitterUserId().getCode())
                     .setReceiver(operation.getReceiverUserId().getCode())
                     .setAt(operation.getAt())
-                    .setAmount(operation.getAmount());
+                    .setAmount(operation.getAmount())
+                    .setDescription(operation.getDescription());
         }
         return null;
     }
@@ -59,7 +63,6 @@ public class OperationDTO {
     public String getReceiver() {
         return receiver;
     }
-
 
     public OperationDTO setReceiver(String receiver) {
         this.receiver = receiver;
@@ -81,6 +84,15 @@ public class OperationDTO {
 
     public OperationDTO setAmount(double amount) {
         this.amount = amount;
+        return this;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public OperationDTO setDescription(String description) {
+        this.description = description;
         return this;
     }
 
@@ -106,6 +118,7 @@ public class OperationDTO {
                 ", receiver='" + receiver + '\'' +
                 ", at=" + at +
                 ", amount=" + amount +
+                ", description='" + description + '\'' +
                 '}';
     }
 }

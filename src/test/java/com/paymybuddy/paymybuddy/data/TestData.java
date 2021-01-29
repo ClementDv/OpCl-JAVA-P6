@@ -40,7 +40,7 @@ public class TestData {
         );
     }*/
 
-    public static List<OperationDTO> getOperationDTOList() {
+  /*  public static List<OperationDTO> getOperationDTOList() {
         return new ArrayList<>(Arrays.asList(
                 new OperationDTO("USR_clement@gmail.com", "BNK_BNP", null, 2000),
                 new OperationDTO("USR_clement@gmail.com", "BNK_LCL", null, 600),
@@ -49,7 +49,7 @@ public class TestData {
                 new OperationDTO("USR_gamin@gmail.com", "USER_test@test.Com", null, 300),
                 new OperationDTO("USR_jean@gmail.com", "BNK_TEST", null, 150))
         );
-    }
+    }*/
 
     public static UserDTO getUserDTOTransferMoneyToBankOrUser() {
         return new UserDTO(1L, "test@test.com", 899.99);

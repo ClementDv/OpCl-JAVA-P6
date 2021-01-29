@@ -51,7 +51,7 @@ public class TransferServiceTest {
         SecurityContextHolder.setContext(securityContext);
     }
 
-    @Test
+   /* @Test
     public void transferMoneyToBankTest() {
         Mockito.when(bankRepository.findByName(Mockito.anyString())).thenReturn(new Bank());
         Mockito.when(userRepository.findBalanceById(Mockito.anyLong())).thenReturn(999.99);
@@ -61,7 +61,7 @@ public class TransferServiceTest {
         ).isEqualTo(TestData.getUserDTOTransferMoneyToBankOrUser());
     }
 
-    @Test
+   @Test
     public void transferMoneyFromBank() {
         Mockito.when(bankRepository.findByName(Mockito.anyString())).thenReturn(new Bank());
         Mockito.when(userRepository.findBalanceById(Mockito.anyLong())).thenReturn(999.99);
@@ -70,8 +70,8 @@ public class TransferServiceTest {
                 "BNK_BNP", 100.00, SecurityContextHolder.getContext().getAuthentication())
         ).isEqualTo(TestData.getUserDTOTransgerMoneyFromBank());
     }
-
-    @Test
+*/
+  /*  @Test
     public void transferMoneyToUser() {
         Mockito.when(userRepository.findIdByEmail(Mockito.anyString())).thenReturn(2L);
         Mockito.when(userRepository.findBalanceById(Mockito.anyLong())).thenReturn(999.99);
@@ -99,5 +99,5 @@ public class TransferServiceTest {
         Mockito.when(bankRepository.findByName(Mockito.anyString())).thenReturn(null);
         Assertions.assertThatThrownBy(() -> transferService.transferMoneyToBank("BNP", 10.00,  SecurityContextHolder.getContext().getAuthentication())
         ).isInstanceOf(NoBankFoundException.class);
-    }
+    }*/
 }

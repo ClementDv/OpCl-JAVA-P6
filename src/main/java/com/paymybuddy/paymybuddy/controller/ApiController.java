@@ -1,12 +1,12 @@
 package com.paymybuddy.paymybuddy.controller;
 
 import com.paymybuddy.paymybuddy.dto.OperationDTO;
+import com.paymybuddy.paymybuddy.dto.TransferRequest;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
-import com.paymybuddy.paymybuddy.model.Operation;
 import com.paymybuddy.paymybuddy.service.ContactService;
 import com.paymybuddy.paymybuddy.service.TransferService;
 import com.paymybuddy.paymybuddy.service.UserService;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,19 +29,22 @@ public class ApiController {
         this.contactService = contactService;
     }
 
-    @PutMapping("/transferMoneyToBank")
-    private UserDTO transferMoneyToBank(@RequestParam String bank, @RequestParam double amount, Authentication authentication) {
-        return transferService.transferMoneyToBank(bank, amount, authentication);
+    @PutMapping(value = "/transferMoneyToBank", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    private UserDTO transferMoneyToBank(@RequestBody TransferRequest transferRequest ,Authentication authentication) {
+        return transferService.transferMoneyToBank(transferRequest, authentication);
     }
 
-    @PutMapping("/transferMoneyFromBank")
-    private UserDTO transferMoneyFromBank(@RequestParam String bank, @RequestParam double amount, Authentication authentication) {
-        return transferService.transferMoneyFromBank(bank, amount, authentication);
+    @PutMapping(value = "/transferMoneyFromBank", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    private UserDTO transferMoneyFromBank(@RequestBody TransferRequest transferRequest, Authentication authentication) {
+        return transferService.transferMoneyFromBank(transferRequest, authentication);
     }
 
-    @PutMapping("/transferMoneyToUser")
-    private UserDTO transferMoneyToUser(@RequestParam String email, @RequestParam double amount, Authentication authentication) {
-        return transferService.transferMoneyToUser(email, amount, authentication);
+    @PutMapping(value = "/transferMoneyToUser", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    private UserDTO transferMoneyToUser(@RequestBody TransferRequest transferRequest, Authentication authentication) {
+        return transferService.transferMoneyToUser(transferRequest, authentication);
     }
 
     @PostMapping("/addContact")
@@ -49,12 +52,14 @@ public class ApiController {
         contactService.addContact(contactEmail, authentication);
     }
 
-    @GetMapping("/informations")
+    @GetMapping(value = "/informations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     private UserDTO getPersonalInformation(Authentication authentication) {
         return userService.getPersonalInformation(authentication);
     }
 
-    @GetMapping("/operations")
+    @GetMapping(value = "/operations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     private List<OperationDTO> getOperations(@RequestParam(required = false) Integer limit, Authentication authentication) {
         return userService.getOperations(limit, authentication);
     }
