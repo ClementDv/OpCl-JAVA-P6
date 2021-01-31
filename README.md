@@ -26,6 +26,7 @@ DB local server port `3306`
 **POST**
 
 - /paymybuddy/register
+
 *Json Body example :*
 ```
 {
@@ -59,6 +60,7 @@ Return a JSON response with the list of the last operations of the current user.
 **PUT**
 
 - paymybuddy/transferMoneyToBank
+
 *Json Body example :*
 ```
 {
@@ -77,6 +79,8 @@ To transfer money from your bank account to your balance.
 - /paymybuddy/transferMoneyToUser
 Same body with a valid user email as name.
 To transfer money from your balance to an another user balance.
+
+**The application take 5% of the User to User transaction**
 
 **POST**
 
