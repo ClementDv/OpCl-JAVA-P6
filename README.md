@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/ClementDv/OpCl-JAVA-P6/blob/dev/logo.png?raw=true" alt="Sublime's custom image"/>
+</p>
+
 # OpCl-JAVA-P6
 
 A local person-to-person payment application with DB setup automatically with MYSQL via Liquibase. 
