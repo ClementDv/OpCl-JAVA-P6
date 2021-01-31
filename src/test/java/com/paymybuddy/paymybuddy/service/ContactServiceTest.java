@@ -2,6 +2,7 @@ package com.paymybuddy.paymybuddy.service;
 
 import com.paymybuddy.paymybuddy.data.TestData;
 import com.paymybuddy.paymybuddy.exception.ContactAlreadyAssignedException;
+import com.paymybuddy.paymybuddy.exception.NoUserFoundException;
 import com.paymybuddy.paymybuddy.model.Contact;
 import com.paymybuddy.paymybuddy.repository.ContactRepository;
 import com.paymybuddy.paymybuddy.repository.UserRepository;
@@ -10,6 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -55,5 +57,12 @@ public class ContactServiceTest {
         Mockito.when(contactRepository.findByUserIdAndContactId(Mockito.anyLong(), Mockito.anyLong())).thenReturn(new Contact());
         Assertions.assertThatThrownBy(() -> contactService.addContact("test@gmail.com",  SecurityContextHolder.getContext().getAuthentication())
         ).isInstanceOf(ContactAlreadyAssignedException.class);
+    }
+
+    @Test
+    public void addContactNoUserFoundExceptionTest() {
+        Mockito.when(userRepository.findIdByEmail(Mockito.anyString())).thenReturn(null);
+        Assertions.assertThatThrownBy(() -> contactService.addContact("test@gmail.com",  SecurityContextHolder.getContext().getAuthentication())
+        ).isInstanceOf(NoUserFoundException.class);
     }
 }

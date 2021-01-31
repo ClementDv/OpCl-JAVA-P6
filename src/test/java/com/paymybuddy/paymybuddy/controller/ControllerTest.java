@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paymybuddy.paymybuddy.config.TestConfig;
 import com.paymybuddy.paymybuddy.data.TestData;
 import com.paymybuddy.paymybuddy.dto.OperationDTO;
+import com.paymybuddy.paymybuddy.dto.TransferRequest;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
 import com.paymybuddy.paymybuddy.exception.*;
 import com.paymybuddy.paymybuddy.security.config.JwtAuthenticationEntryPoint;
 import com.paymybuddy.paymybuddy.security.config.JwtTokenUtil;
-import com.paymybuddy.paymybuddy.security.model.request.JwtRequest;
-import com.paymybuddy.paymybuddy.security.model.response.JwtResponse;
 import com.paymybuddy.paymybuddy.security.service.AuthenticationService;
 import com.paymybuddy.paymybuddy.service.ContactService;
 import com.paymybuddy.paymybuddy.service.TransferService;
@@ -18,8 +17,6 @@ import com.paymybuddy.paymybuddy.service.UserService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -29,11 +26,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -89,73 +85,83 @@ public class ControllerTest {
         SecurityContextHolder.setContext(securityContext);
     }
 
-   /* @Test
+    @Test
     public void transferMoneyToBank() throws Exception {
         // GIVEN
-        Mockito.when(transferService.transferMoneyToBank(Mockito.anyString(), Mockito.anyDouble(), Mockito.any())).thenAnswer(a -> {
-            String bankName = a.getArgument(0);
-            double amount = a.getArgument(1);
-            if ("invalid".equals(bankName)) {
-                throw new NoBankFoundException(bankName);
-            }
-            if (amount < 0) {
-                throw new NonValidAmountException(amount);
-            }
-            if (amount > 100) {
-                throw new NoEnoughMoneyOnBalanceException(100, amount);
-            }
-            return TestData.getUserDTOTransferMoneyToBankOrUser();
+        Mockito.when(transferService.transferMoneyToBank(Mockito.any(TransferRequest.class), Mockito.any(Authentication.class))).thenAnswer(a -> {
+            TransferRequest transferRequest = a.getArgument(0);
+            if (BigDecimal.valueOf(transferRequest.getAmount()).scale() >= 3)
+                throw new NonValidAmountException(transferRequest.getAmount());
+            if (transferRequest.getName().equals("INVALID"))
+                throw new NoBankFoundException(transferRequest.getName());
+            if (transferRequest.getAmount() < 100)
+                throw new NoEnoughMoneyOnBalanceException(transferRequest.getAmount(), 100);
+            return TestData.getUserDTOTransferMoneyToBank();
         });
 
         // WHEN
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank?bank=BNP&amount=100")
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"BNP\", \"amount\": \"200\", \"description\": \"Test\"}")
                 .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
         // THEN
         Assertions.assertThat(result.getResponse().getContentAsString())
-                .isEqualTo(jsonTester.write(TestData.getUserDTOTransferMoneyToBankOrUser()).getJson());
+                .isEqualTo(jsonTester.write(TestData.getUserDTOTransferMoneyToBank()).getJson());
 
         // Test errors
-        mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank?bank=invalid&amount=100")
-                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isPreconditionFailed()).andReturn();
-        mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank?bank=BNP&amount=-200")
-                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
-        mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank?bank=BNP&amount=200")
-                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
+        //No enough money
+        mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"BNP\", \"amount\": \"50\", \"description\": \"Test\"}")
+                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isBadRequest());
+        // Wrong amount
+        mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"BNP\", \"amount\": \"50.003\", \"description\": \"Test\"}")
+                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isBadRequest());
+        // Invalid Bank
+        mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToBank")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"INVALID\", \"amount\": \"50.00\", \"description\": \"Test\"}")
+                .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isPreconditionFailed());
     }
 
     @Test
     public void transferMoneyToUser() throws Exception {
         // GIVEN
-        Mockito.when(transferService.transferMoneyToUser(Mockito.anyString(), Mockito.anyDouble(), Mockito.any()))
-                .thenReturn(TestData.getUserDTOTransferMoneyToBankOrUser());
+        Mockito.when(transferService.transferMoneyToUser(Mockito.any(TransferRequest.class), Mockito.any()))
+                .thenReturn(TestData.getUserDTOFromUserData());
 
         // WHEN
         MvcResult result = mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyToUser?email=clement@Test.com&amount=100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"test@test.com\", \"amount\": \"100\", \"description\": \"Test\"}")
                 .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
         // THEN
         Assertions.assertThat(result.getResponse().getContentAsString())
-                .isEqualTo(jsonTester.write(TestData.getUserDTOTransferMoneyToBankOrUser()).getJson());
+                .isEqualTo(jsonTester.write(TestData.getUserDTOFromUserData()).getJson());
     }
 
-
-  /*  @Test
+    @Test
     public void transferMoneyFromBank() throws Exception {
         // GIVEN
-        Mockito.when(transferService.transferMoneyFromBank(Mockito.anyString(), Mockito.anyDouble(), Mockito.any()))
-                .thenReturn(TestData.getUserDTOTransgerMoneyFromBank());
+        Mockito.when(transferService.transferMoneyFromBank(Mockito.any(TransferRequest.class), Mockito.any()))
+                .thenReturn(TestData.getUserDTOFromUserData());
 
         // WHEN
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyFromBank?bank=BNP&amount=100")
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.put("/paymybuddy/transferMoneyFromBank")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"test@test.com\", \"amount\": \"100\", \"description\": \"Test\"}")
                 .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
         // THEN
         Assertions.assertThat(result.getResponse().getContentAsString())
-                .isEqualTo(jsonTester.write(TestData.getUserDTOTransgerMoneyFromBank()).getJson());
-    }*/
+                .isEqualTo(jsonTester.write(TestData.getUserDTOFromUserData()).getJson());
+    }
 
-   /* @Test
+    @Test
     public void getOperationsTest(@Autowired MockMvc mockMvc) throws Exception {
         // GIVEN
         Mockito.when(userService.getOperations(Mockito.isNull(), Mockito.any()))
@@ -211,5 +217,5 @@ public class ControllerTest {
                 .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isPreconditionFailed()).andReturn();
         mvc.perform(MockMvcRequestBuilders.post("/paymybuddy/addContact?contactEmail=alreadyExist")
                 .with(csrf()).accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn();
-    }*/
+    }
 }

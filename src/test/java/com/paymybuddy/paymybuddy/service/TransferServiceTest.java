@@ -1,8 +1,11 @@
 package com.paymybuddy.paymybuddy.service;
 
 import com.paymybuddy.paymybuddy.data.TestData;
+import com.paymybuddy.paymybuddy.dto.TransferRequest;
+import com.paymybuddy.paymybuddy.dto.UserDTO;
 import com.paymybuddy.paymybuddy.exception.NoBankFoundException;
 import com.paymybuddy.paymybuddy.exception.NoEnoughMoneyOnBalanceException;
+import com.paymybuddy.paymybuddy.exception.NoUserFoundException;
 import com.paymybuddy.paymybuddy.exception.NonValidAmountException;
 import com.paymybuddy.paymybuddy.model.Bank;
 import com.paymybuddy.paymybuddy.model.User;
@@ -14,7 +17,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,7 +28,6 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
-import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @Import(TransferServiceImpl.class)
@@ -51,53 +52,98 @@ public class TransferServiceTest {
         SecurityContextHolder.setContext(securityContext);
     }
 
-   /* @Test
-    public void transferMoneyToBankTest() {
+    @Test
+    public void transferMoneyToBank() {
+        Mockito.when(userRepository.getOne(Mockito.anyLong())).thenReturn(
+                new User().setId(1L).setBalance(3000).setEmail("test@test.com"));
         Mockito.when(bankRepository.findByName(Mockito.anyString())).thenReturn(new Bank());
-        Mockito.when(userRepository.findBalanceById(Mockito.anyLong())).thenReturn(999.99);
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(new User().setId(1L).setEmail("test@test.com").setBalance(899.99)));
         Assertions.assertThat(transferService.transferMoneyToBank(
-                "BNK_BNP", 100.00, SecurityContextHolder.getContext().getAuthentication())
-        ).isEqualTo(TestData.getUserDTOTransferMoneyToBankOrUser());
+                new TransferRequest("BNP", 2000, "")
+                , SecurityContextHolder.getContext().getAuthentication())
+        ).isEqualTo(TestData.getUserDTOTransferMoneyToBank());
     }
 
-   @Test
-    public void transferMoneyFromBank() {
+    @Test
+    public void transferMoneyToBankNoEnoughMoneyOnBalanceException() {
+        Mockito.when(userRepository.getOne(Mockito.anyLong())).thenReturn(
+                new User().setId(1L).setBalance(3000).setEmail("test@test.com"));
         Mockito.when(bankRepository.findByName(Mockito.anyString())).thenReturn(new Bank());
-        Mockito.when(userRepository.findBalanceById(Mockito.anyLong())).thenReturn(999.99);
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(new User().setId(1L).setEmail("test@test.com").setBalance(1099.99)));
-        Assertions.assertThat(transferService.transferMoneyFromBank(
-                "BNK_BNP", 100.00, SecurityContextHolder.getContext().getAuthentication())
-        ).isEqualTo(TestData.getUserDTOTransgerMoneyFromBank());
-    }
-*/
-  /*  @Test
-    public void transferMoneyToUser() {
-        Mockito.when(userRepository.findIdByEmail(Mockito.anyString())).thenReturn(2L);
-        Mockito.when(userRepository.findBalanceById(Mockito.anyLong())).thenReturn(999.99);
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(new User().setId(1L).setEmail("test@test.com").setBalance(899.99)));
-        Assertions.assertThat(transferService.transferMoneyToUser(
-                "BNK_BNP", 100.00, SecurityContextHolder.getContext().getAuthentication())
-        ).isEqualTo(TestData.getUserDTOTransferMoneyToBankOrUser());
-    }
-
-    @Test
-    public void NonValidAmountExceptionTest() {
-        Assertions.assertThatThrownBy(() -> transferService.transferMoneyToUser("test", 300.222,  SecurityContextHolder.getContext().getAuthentication())
-        ).isInstanceOf(NonValidAmountException.class);
-    }
-
-    @Test
-    public void NoEnoughMoneyOnBalanceExceptionTest() {
-        Mockito.when(userRepository.findBalanceById(Mockito.anyLong())).thenReturn(10.00);
-        Assertions.assertThatThrownBy(() -> transferService.transferMoneyToUser("test", 11.00,  SecurityContextHolder.getContext().getAuthentication())
+        Assertions.assertThatThrownBy(() ->
+                transferService.transferMoneyToBank(
+                        new TransferRequest("BNP", 4000, "Test")
+                        , SecurityContextHolder.getContext().getAuthentication())
         ).isInstanceOf(NoEnoughMoneyOnBalanceException.class);
     }
 
     @Test
-    public void NoBankFoundException() {
-        Mockito.when(bankRepository.findByName(Mockito.anyString())).thenReturn(null);
-        Assertions.assertThatThrownBy(() -> transferService.transferMoneyToBank("BNP", 10.00,  SecurityContextHolder.getContext().getAuthentication())
+    public void transferMoneyFromBank() {
+        Mockito.when(userRepository.getOne(Mockito.anyLong())).thenReturn(
+                new User().setId(1L).setBalance(2000).setEmail("test@test.com"));
+        Mockito.when(bankRepository.findByName(Mockito.anyString())).thenReturn(new Bank());
+        Assertions.assertThat(transferService.transferMoneyFromBank(
+                new TransferRequest("BNP", 2000, "")
+                , SecurityContextHolder.getContext().getAuthentication())
+        ).isEqualTo(TestData.getUserDTOTransferMoneyFromBank());
+    }
+
+    @Test
+    public void NoBankFoundExcpetion() {
+        Mockito.when(userRepository.getOne(Mockito.anyLong())).thenReturn(
+                new User().setId(1L).setBalance(2000).setEmail("test@test.com"));
+        Assertions.assertThatThrownBy(() ->
+                transferService.transferMoneyFromBank(
+                        new TransferRequest("WRONGBANK", 1000, "Test")
+                        , SecurityContextHolder.getContext().getAuthentication())
         ).isInstanceOf(NoBankFoundException.class);
-    }*/
+    }
+
+    @Test
+    public void transferMoneyToUser() {
+        Mockito.when(userRepository.getOne(Mockito.anyLong())).thenReturn(
+                new User().setId(1L).setBalance(2000).setEmail("opcl@gmail.com"));
+        Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(
+                new User().setId(2L).setBalance(0).setEmail("opcl2@gmail.com"));
+        Assertions.assertThat(transferService.transferMoneyToUser(
+                new TransferRequest("opcl@gmail.com", 1000, "Test"),
+                SecurityContextHolder.getContext().getAuthentication())
+        ).isEqualTo(new UserDTO().setId(1L).setBalance(1000).setEmail("opcl@gmail.com"));
+    }
+
+    @Test
+    public void TransferMoneyToUserNoCurrentUserFoundException() {
+        Assertions.assertThatThrownBy(() ->
+                transferService.transferMoneyToUser(new TransferRequest("test@test.com", 1000, "Test"), SecurityContextHolder.getContext().getAuthentication())
+        ).isInstanceOf(NoUserFoundException.class);
+    }
+
+    @Test
+    public void TransferMoneyToUserNoUserFoundException() {
+        Mockito.when(userRepository.getOne(Mockito.anyLong())).thenReturn(
+                new User().setId(1L).setBalance(2000).setEmail("opcl@gmail.com"));
+        Assertions.assertThatThrownBy(() ->
+                transferService.transferMoneyToUser(new TransferRequest("test", 1000, "Test"), SecurityContextHolder.getContext().getAuthentication())
+        ).isInstanceOf(NoUserFoundException.class);
+    }
+
+    @Test
+    public void TransferMoneyToUserNonValidAmountExceptionTest() {
+        Mockito.when(userRepository.getOne(Mockito.anyLong())).thenReturn(
+                new User().setId(1L).setBalance(2000).setEmail("opcl@gmail.com"));
+        Assertions.assertThatThrownBy(() ->
+                transferService.transferMoneyToUser(new TransferRequest("test", 1000.001, "Test"), SecurityContextHolder.getContext().getAuthentication())
+        ).isInstanceOf(NonValidAmountException.class);
+    }
+
+    @Test
+    public void TransferMoneyToUserNoEnoughMon() {
+        Mockito.when(userRepository.getOne(Mockito.anyLong())).thenReturn(
+                new User().setId(1L).setBalance(2000).setEmail("opcl@gmail.com"));
+        Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(
+                new User().setId(2L).setBalance(0).setEmail("opcl2@gmail.com"));
+        Assertions.assertThatThrownBy(() -> transferService.transferMoneyToUser(
+                new TransferRequest("opcl2@gmail.com", 3000, "")
+                , SecurityContextHolder.getContext().getAuthentication())
+        ).isInstanceOf(NoEnoughMoneyOnBalanceException.class);
+    }
+
 }

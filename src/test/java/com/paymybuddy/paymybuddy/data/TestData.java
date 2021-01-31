@@ -2,6 +2,7 @@ package com.paymybuddy.paymybuddy.data;
 
 import com.paymybuddy.paymybuddy.dto.OperationDTO;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
+import com.paymybuddy.paymybuddy.model.Bank;
 import com.paymybuddy.paymybuddy.model.Operation;
 import com.paymybuddy.paymybuddy.model.User;
 import com.paymybuddy.paymybuddy.security.service.UserDetailsImpl;
@@ -29,44 +30,45 @@ public class TestData {
         return Optional.of(getTrueUserData());
     }
 
-    /*public static List<Operation> getOperationList() {
+    public static List<Operation> getOperationList() {
         return new ArrayList<>(Arrays.asList(
-                new Operation("USR_clement@gmail.com", "BNK_BNP", 2000).setAt(null),
-                new Operation("USR_clement@gmail.com", "BNK_LCL", 600).setAt(null),
-                new Operation("USR_try@gmail.com", "USR_bibi@lol.com", 500).setAt(null),
-                new Operation("USR_giva@test.com", "BNK_BNP", 400).setAt(null),
-                new Operation("USR_gamin@gmail.com", "USER_test@test.Com", 300).setAt(null),
-                new Operation("USR_jean@gmail.com", "BNK_TEST", 150).setAt(null))
-        );
-    }*/
-
-  /*  public static List<OperationDTO> getOperationDTOList() {
-        return new ArrayList<>(Arrays.asList(
-                new OperationDTO("USR_clement@gmail.com", "BNK_BNP", null, 2000),
-                new OperationDTO("USR_clement@gmail.com", "BNK_LCL", null, 600),
-                new OperationDTO("USR_try@gmail.com", "USR_bibi@lol.com", null, 500),
-                new OperationDTO("USR_giva@test.com", "BNK_BNP", null, 400),
-                new OperationDTO("USR_gamin@gmail.com", "USER_test@test.Com", null, 300),
-                new OperationDTO("USR_jean@gmail.com", "BNK_TEST", null, 150))
-        );
-    }*/
-
-    public static UserDTO getUserDTOTransferMoneyToBankOrUser() {
-        return new UserDTO(1L, "test@test.com", 899.99);
-    }
-
-    public static UserDTO getUserDTOTransgerMoneyFromBank() {
-        return new UserDTO(1L, "test@test.com", 1099.99);
-    }
-
-   /* public static List<Operation> getOperationListRepositoryTest() {
-        return new ArrayList<>(Arrays.asList(
-                new Operation("BNK_BNP", "USR_clement@ocr.fr", 300.00).setId(2L),
-                new Operation("USR_clement@ocr.fr", "BNK_BNP", 200.00).setId(1L)
+                new Operation(new Bank().setName("BNP").setAddress(""), null, null,
+                        new User().setEmail("opcl1@test.com"), "TEST", 200),
+                new Operation(null, new User().setEmail("opcl@test.com"), new Bank().setName("LCL").setAddress(""),
+                        null, "TEST", 700),
+                new Operation(null, new User().setEmail("test@test.com"), null,
+                        new User().setEmail("test1@test.com"), "It's a test", 400),
+                new Operation(null, new User().setEmail("cal@gmail.com"), null,
+                        new User().setEmail("test@lol.com"), "we test", 300.55),
+                new Operation(null, new User().setEmail("test@ab.com"), null,
+                        new User().setEmail("try@test.com"), "try again", 100),
+                new Operation(new Bank().setName("CA").setAddress(""), null, null,
+                        new User().setEmail("transaction@tra.fr"), "test test", 53.44)
         ));
-    }*/
+    }
 
-    public static UserDetailsImpl getUserDetailsImplFromUser() {
-        return UserDetailsImpl.build(getTrueUserData());
+    public static List<OperationDTO> getOperationDTOList() {
+        return new ArrayList<>(Arrays.asList(
+                new OperationDTO("BNK_BNP_", "USR_opcl1@test.com", null,
+                        200, "TEST"),
+                new OperationDTO("USR_opcl@test.com", "BNK_LCL_", null,
+                        700, "TEST"),
+                new OperationDTO("USR_test@test.com", "USR_test1@test.com", null,
+                        400, "It's a test"),
+                new OperationDTO("USR_cal@gmail.com", "USR_test@lol.com", null,
+                        300.55,  "we test"),
+                new OperationDTO("USR_test@ab.com", "USR_try@test.com", null,
+                        100, "try again"),
+                new OperationDTO("BNK_CA_", "USR_transaction@tra.fr", null,
+                        53.44, "test test"))
+        );
+    }
+
+    public static UserDTO getUserDTOTransferMoneyToBank() {
+        return new UserDTO(1L, "test@test.com", 1000);
+    }
+
+    public static UserDTO getUserDTOTransferMoneyFromBank() {
+        return new UserDTO(1L, "test@test.com", 4000);
     }
 }

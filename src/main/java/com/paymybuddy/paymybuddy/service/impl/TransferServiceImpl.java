@@ -92,6 +92,7 @@ public class TransferServiceImpl implements TransferService {
                 userRepository.save(currentUser);
                 logger.info("Request transfer money to user successful");
                 addTransferUserToUserOperation(currentUser, transferUser, transferRequest);
+                System.out.println("\nUSER RETURN :" + UserDTO.build(currentUser));
                 return UserDTO.build(currentUser);
             }
             logger.info("Request transfer money to user failed");
