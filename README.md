@@ -40,7 +40,7 @@ It will register the user.
 
 *Same type and shape of body than register*.
 Return Json repsonse with JWT (Json Web Token)
-
+____
 ###  API
 *You must send a valid JWT of bearer type in header*
 
