@@ -25,7 +25,7 @@ DB local server port `3306`
 
 **POST**
 
-- /paymybuddy/register
+- **/paymybuddy/register**
 
 *Json Body example :*
 ```
@@ -35,7 +35,8 @@ DB local server port `3306`
 }
 ```
 It will register the user.
-- /paymybuddy/login
+
+- **/paymybuddy/login**
 
 *Same type and shape of body than register*.
 Return Json repsonse with JWT (Json Web Token)
@@ -45,21 +46,21 @@ Return Json repsonse with JWT (Json Web Token)
 
 **GET**
 
-- /paymybuddy/informations
+- **/paymybuddy/informations**
 
 Return a JSON response with the id, email and balance of the current user.
 
-- /paymybuddy/operations
+- **/paymybuddy/operations**
 
 Parameters :
 
-1. limit (optional), default is 10. ex : /operations?limit=12
+1. limit (optional), default is 10. ex : */operations?limit=12*
 
 Return a JSON response with the list of the last operations of the current user.
 
 **PUT**
 
-- paymybuddy/transferMoneyToBank
+- **paymybuddy/transferMoneyToBank**
 
 *Json Body example :*
 ```
@@ -71,12 +72,12 @@ Return a JSON response with the list of the last operations of the current user.
 ```
 To transfer money from your balance to an bank account
 
-- /paymybuddy/transferMoneyFromBank
+- **/paymybuddy/transferMoneyFromBank**
 
 Same Body than last.
 To transfer money from your bank account to your balance.
 
-- /paymybuddy/transferMoneyToUser
+- **/paymybuddy/transferMoneyToUser**
 Same body with a valid user email as name.
 To transfer money from your balance to an another user balance.
 
@@ -84,11 +85,11 @@ To transfer money from your balance to an another user balance.
 
 **POST**
 
-- /paymybuddy/addContact
+- **/paymybuddy/addContact**
 
 Parameters :
 
-1. contactEmail ex : /addContact?contactEmail=opcl2@test.com
+1. contactEmail ex : */addContact?contactEmail=opcl2@test.com*
 
 Add a contact to current user.
 
