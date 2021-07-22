@@ -5,7 +5,7 @@
 # OpCl-JAVA-P6
 
 A local person-to-person payment application with DB setup automatically with MYSQL via Liquibase. 
-Bak end part dev.
+Back end part dev.
 
 ## Prerequisites
 
